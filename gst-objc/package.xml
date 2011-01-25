@@ -1,0 +1,7 @@
+<package>
+	<name>Objc</name>
+	<namespace>Objc</namespace>
+	<module>libgstobjc</module>	
+
+	<filein>ObjcRuntime.st</filein>
+</package>
