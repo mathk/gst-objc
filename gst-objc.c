@@ -8,7 +8,7 @@ void
 gst_initModule (VMProxy * proxy)
 {
   proxy->dlOpen("libobjc", false);
-  proxy->dlOpen("Foundation.framework/Foundation", false);
+  proxy->dlOpen("Cocoa.framework/Cocoa", false);
 
 }
 
