@@ -9,3 +9,14 @@ configure
 *.star
 *.tmp
 *.frag
+m4
+libtool
+ltmain.sh
+missing
+gst
+stamp-classes
+autom4te.cache
+depcomp
+install-sh
+.libs
+.deps
