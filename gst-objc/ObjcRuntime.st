@@ -1,5 +1,12 @@
 Object subclass: ObjcRuntime [
 
+
+    ObjcRuntime class >> at: aClassName [
+	| nsClass |
+	nsClass := self objcGetClass: aClassName.
+	^ObjcObject classFromPtr: nsClass
+    ]
+
     ObjcRuntime class >> objcGetClass: name [
 	<cCall: 'objc_getClass' returning: #cObject args: #( #string )>
     ]
@@ -23,7 +30,19 @@ Object subclass: ObjcRuntime [
     ObjcRuntime class >> classGetName: aClass [
 	<cCall: 'class_getName' returning: #string args: #( #cObject )>
     ]
-    
+
+    ObjcRuntime class >> objcMsgSend: receiver selector: sel args: args [
+	<cCall: 'objc_msgSend' returning: #cObject args: #( #cObject #cObject #variadic )>
+    ]
+
+    ObjcRuntime class >> retain: receiver [
+	<cCall: 'CFRetain' returning: #cObject args: #( #cObject )>
+    ]
+
+    ObjcRuntime class >> release: receiver [
+	<cCall: 'CFRelease' returning: #void args: #( #cObject )>
+    ]
+
     ObjcRuntime class >> objcGetClassList [
 	| bufferType classes buffer |
 	bufferType := CArrayCType elementType: (CObjectType ptrType) 
