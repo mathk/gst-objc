@@ -10,6 +10,14 @@ Object subclass: ObjcObject [
 	    yourself
     ]
 
+    ObjcObject class >> basicFromPtr: aCObject [
+	<category: 'private'>
+	^(self new)
+	    basicObjcPtr: aCObject;
+	    isClass: false;
+	    yourself
+    ]
+
     ObjcObject class >> classFromPtr: aObjcClass [
 	^(self new)
 	    basicObjcPtr: aObjcClass;
@@ -36,9 +44,18 @@ Object subclass: ObjcObject [
 	    objcMsgSend: objcPtr 
 	    selector: objcSel 
 	    args: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
-	^return = objcSel 
-            ifFalse: [self class fromPtr: return]
+	^return = objcSel
+            ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]
+    ]
+
+    intSend: selector with: arguments [
+	| objcSel |
+	objcSel := ObjcRuntime selRegisterName: selector.
+	^ObjcRuntime 
+	    intObjcMsgSend: objcPtr 
+	    selector: objcSel 
+	    args: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
     ]
 
     send: selector [
@@ -68,6 +85,15 @@ Object subclass: ObjcObject [
 	self isClass ifTrue: [^self class fromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0)].
 	self error: 'Non objc class can''t send alloc'
     ]
+
+    noRetainAlloc [
+	self isClass ifTrue: [^self class basicFromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0)].
+	self error: 'Non objc class can''t send alloc'
+    ]
+    
+    log [
+	ObjcRuntime log: objcPtr
+    ]
 ]
 
 Object extend [
@@ -80,8 +106,7 @@ String extend [
     asNSString [
 	| nsString string |
 	nsString := Objc.ObjcRuntime at: 'NSString'.
-	string := nsString alloc.
-	string send: #initWithUTF8String: with: {self asCData: CStringType}.
+	string := nsString send: #stringWithCString: with: {self asCData: CStringType}.
 	^string
     ]
 ]

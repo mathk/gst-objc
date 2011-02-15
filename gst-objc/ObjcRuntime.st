@@ -19,10 +19,6 @@ Object subclass: ObjcRuntime [
 	<cCall: 'sel_registerName' returning: #cObject args: #( #string )>
     ]
     
-    ObjcRuntime class >> objcMsgSend: receiver sel: aSelector [
-	<cCall: 'objc_msgSend' returning: #cObject args: #( #cObject #cObject )>
-    ]
-    
     ObjcRuntime class >> primObjcGetClassList: buffer size: length [
 	<cCall: 'objc_getClassList' returning: #int args: #(#cObject #int)>
     ]
@@ -35,12 +31,28 @@ Object subclass: ObjcRuntime [
 	<cCall: 'objc_msgSend' returning: #cObject args: #( #cObject #cObject #variadic )>
     ]
 
+    ObjcRuntime class >> intObjcMsgSend: receiver selector: sel args: args [
+	<cCall: 'objc_msgSend' returning: #int args: #( #cObject #cObject #variadic )>
+    ]
+
     ObjcRuntime class >> retain: receiver [
 	<cCall: 'CFRetain' returning: #cObject args: #( #cObject )>
     ]
 
     ObjcRuntime class >> release: receiver [
 	<cCall: 'CFRelease' returning: #void args: #( #cObject )>
+    ]
+
+    ObjcRuntime class >> log: object [
+	<cCall: 'NSLog' returning: #void args: #( #cObject )>
+    ]
+
+    ObjcRuntime class >> primObjcAllocateClassPair: aClassName super: aSuperName indexable: aInt [
+	<cCall: 'objc_allocateClassPair' returning: #cObject args: #( #cObject #string #int )>
+    ]
+
+    ObjcRuntime class >> objcAllocateClassPair: aClassName super: aSuperName indexable: aInt [
+	^self primObjcAllocateClassPair: (self at: aClassName) objcPtr super: aSuperName indexable: aInt
     ]
 
     ObjcRuntime class >> objcGetClassList [
