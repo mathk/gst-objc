@@ -12,5 +12,8 @@ Object subclass: ObjcAppKit [
 	nsBackingStoreRetained [ ^0 ]
 	nsBackingStoreNonretained [ ^1 ]
 	nsBackingStoreBuffered [ ^2 ]
+	nsRectFill: aRect [
+	    <cCall: 'NSRectFill' returning: #void args: #( #cObject )>
+	]
     ]
 ]

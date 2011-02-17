@@ -52,7 +52,19 @@ Object subclass: ObjcRuntime [
     ]
 
     ObjcRuntime class >> objcAllocateClassPair: aClassName super: aSuperName indexable: aInt [
-	^self primObjcAllocateClassPair: (self at: aClassName) objcPtr super: aSuperName indexable: aInt
+	^ObjcObject classFromPtr: (self primObjcAllocateClassPair: (self at: aClassName) objcPtr super: aSuperName indexable: aInt)
+    ]
+
+    ObjcRuntime class >> primClassAddMethod: class sel: selector body: ccallback [
+	<cCall: 'class_addMethod' returning: #void args: #( #cObject #cObject #cObject )>
+    ]
+	
+    ObjcRuntime class >> classAddMethod: class sel: selector body: block [
+	self primClassAddMethod: class objcPtr 
+	     sel: (self selRegisterName: selector)
+	     body: (CCallbackDescriptor for: [:objcSelf :cmd :arg1 | block value: (ObjcObject fromPtr: objcSelf) value: arg1] 
+					returning: #void 
+					withArgs: #(#cObject #cObject))
     ]
 
     ObjcRuntime class >> objcGetClassList [
