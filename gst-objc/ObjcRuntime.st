@@ -47,24 +47,25 @@ Object subclass: ObjcRuntime [
 	<cCall: 'NSLog' returning: #void args: #( #cObject )>
     ]
 
-    ObjcRuntime class >> primObjcAllocateClassPair: aClassName super: aSuperName indexable: aInt [
+    ObjcRuntime class >> primObjcAllocateClassPairSuper: aSuperClass name: aName indexable: aInt [
 	<cCall: 'objc_allocateClassPair' returning: #cObject args: #( #cObject #string #int )>
     ]
 
-    ObjcRuntime class >> objcAllocateClassPair: aClassName super: aSuperName indexable: aInt [
-	^ObjcObject classFromPtr: (self primObjcAllocateClassPair: (self at: aClassName) objcPtr super: aSuperName indexable: aInt)
+    ObjcRuntime class >> objcAllocateClassPairSuper: aSuperName name: aName indexable: aInt [
+	^ObjcObject classFromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
     ]
 
-    ObjcRuntime class >> primClassAddMethod: class sel: selector body: ccallback [
-	<cCall: 'class_addMethod' returning: #void args: #( #cObject #cObject #cObject )>
+    ObjcRuntime class >> primClassAddMethod: class sel: selector body: ccallback type: typeStr [
+	<cCall: 'class_addMethod' returning: #void args: #( #cObject #cObject #cObject #string )>
     ]
 	
-    ObjcRuntime class >> classAddMethod: class sel: selector body: block [
+    ObjcRuntime class >> classAddMethod: class sel: selector body: block type: typeStr [
 	self primClassAddMethod: class objcPtr 
 	     sel: (self selRegisterName: selector)
 	     body: (CCallbackDescriptor for: [:objcSelf :cmd :arg1 | block value: (ObjcObject fromPtr: objcSelf) value: arg1] 
 					returning: #void 
-					withArgs: #(#cObject #cObject))
+					withArgs: #(#cObject #cObject #cObject))
+	    type: typeStr
     ]
 
     ObjcRuntime class >> objcGetClassList [

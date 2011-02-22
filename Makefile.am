@@ -14,7 +14,8 @@ AM_CPPFLAGS = $(GST_CFLAGS)
 
 
 lib_LTLIBRARIES = libgstobjc.la
-libgstobjc_la_SOURCES = gst-objc.c
+libgstobjc_la_SOURCES = gst-objc.c gst-objc-ext.m gst-objc-ext.h
+libgstobjc_la_LIBADD = $(OBJCLIBS)
 
 ### -------------------------------------- ###
 ### Rules completed by GST_PACKAGE_ENABLE. ###
