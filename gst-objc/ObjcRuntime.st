@@ -4,7 +4,7 @@ Object subclass: ObjcRuntime [
     ObjcRuntime class >> at: aClassName [
 	| nsClass |
 	nsClass := self objcGetClass: aClassName.
-	^ObjcObject classFromPtr: nsClass
+	^ObjcClass fromPtr: nsClass
     ]
 
     ObjcRuntime class >> objcGetClass: name [
@@ -60,7 +60,7 @@ Object subclass: ObjcRuntime [
     ]
 
     ObjcRuntime class >> objcAllocateClassPairSuper: aSuperName name: aName indexable: aInt [
-	^ObjcObject classFromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
+	^ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
     ]
 
     ObjcRuntime class >> primClassAddMethod: class sel: selector body: ccallback type: typeStr [

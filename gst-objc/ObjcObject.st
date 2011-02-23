@@ -6,22 +6,13 @@ Object subclass: ObjcObject [
 	<category: 'private'>
 	^(self new)
 	    objcPtr: aCObject;
-	    isClass: false;
 	    yourself
     ]
 
     ObjcObject class >> basicFromPtr: aCObject [
 	<category: 'private'>
 	^(self new)
-	    basicObjcPtr: aCObject;
-	    isClass: false;
-	    yourself
-    ]
-
-    ObjcObject class >> classFromPtr: aObjcClass [
-	^(self new)
-	    basicObjcPtr: aObjcClass;
-	    isClass: true;
+	   basicObjcPtr: aCObject;
 	    yourself
     ]
 
@@ -29,12 +20,8 @@ Object subclass: ObjcObject [
 	^true
     ]
 
-    isClass: aBool [
-	isClass := aBool
-    ]
-
     isClass [
-	^isClass
+	^false
     ]
 
     send: selector with: arguments [
@@ -81,15 +68,6 @@ Object subclass: ObjcObject [
        ObjcRuntime release: objcPtr
    ]
 
-    alloc [
-	self isClass ifTrue: [^self class fromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0)].
-	self error: 'Non objc class can''t send alloc'
-    ]
-
-    noRetainAlloc [
-	self isClass ifTrue: [^self class basicFromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0)].
-	self error: 'Non objc class can''t send alloc'
-    ]
     
     log [
 	ObjcRuntime log: objcPtr

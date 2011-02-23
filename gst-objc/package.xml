@@ -7,4 +7,5 @@
 	<filein>ObjcObject.st</filein>
 	<filein>ObjcDataType.st</filein>
 	<filein>ObjcAppKit.st</filein>
+	<filein>ObjcClass.st</filein>
 </package>
