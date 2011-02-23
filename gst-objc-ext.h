@@ -8,4 +8,11 @@
 
 @end
 
+@interface NSView (gs)
+- (NSRect*) gstBounds;
+@end
+
+void fillRed (id, SEL, NSRect);
+void gst_rectFill (NSRect*);
+
 #endif // __APPLE__

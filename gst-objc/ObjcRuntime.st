@@ -51,6 +51,14 @@ Object subclass: ObjcRuntime [
 	<cCall: 'objc_allocateClassPair' returning: #cObject args: #( #cObject #string #int )>
     ]
 
+    ObjcRuntime class >> primObjcRegisterClassPair: aClass [
+	<cCall: 'objc_registerClassPair' returning: #void args: #( #cObject)>
+    ]
+
+    ObjcRuntime class >> objcRegisterClassPair: aClass [
+	self primObjcRegisterClassPair: aClass objcPtr
+    ]
+
     ObjcRuntime class >> objcAllocateClassPairSuper: aSuperName name: aName indexable: aInt [
 	^ObjcObject classFromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
     ]

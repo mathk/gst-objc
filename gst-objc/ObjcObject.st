@@ -59,7 +59,7 @@ Object subclass: ObjcObject [
     ]
 
     send: selector [
-	self send: selector with: #()
+	^self send: selector with: #()
     ]
 
     basicObjcPtr: aCObject [
