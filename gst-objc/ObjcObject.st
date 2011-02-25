@@ -64,13 +64,13 @@ Object subclass: ObjcObject [
     ]
 
 
-   finalize [
+    finalize [
        ObjcRuntime release: objcPtr
-   ]
+    ]
 
     
     log [
-	ObjcRuntime log: objcPtr
+	ObjcRuntime logObject: objcPtr
     ]
 ]
 

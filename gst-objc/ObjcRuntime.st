@@ -43,8 +43,16 @@ Object subclass: ObjcRuntime [
 	<cCall: 'CFRelease' returning: #void args: #( #cObject )>
     ]
 
-    ObjcRuntime class >> log: object [
+    ObjcRuntime class >> log: nsString [
 	<cCall: 'NSLog' returning: #void args: #( #cObject )>
+    ]
+
+    ObjcRuntime class >> log: nsString with: arg [
+	<cCall: 'NSLog' returning: #void args: #( #cObject #cObject )>
+    ]
+
+    ObjcRuntime class >> logObject: object [
+	self log: '%@' asNSString objcPtr with: object
     ]
 
     ObjcRuntime class >> primObjcAllocateClassPairSuper: aSuperClass name: aName indexable: aInt [

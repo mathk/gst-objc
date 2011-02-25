@@ -10,5 +10,6 @@ gst_initModule (VMProxy * proxy)
   proxy->dlOpen ("Cocoa.framework/Cocoa", false);
   proxy->defineCFunc ("fillRedCB", fillRed);
   proxy->defineCFunc ("gstRectFill", gst_rectFill);
+
 }
 
