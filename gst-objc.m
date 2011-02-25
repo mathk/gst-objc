@@ -8,8 +8,10 @@ gst_initModule (VMProxy * proxy)
 {
   proxy->dlOpen ("libobjc", false);
   proxy->dlOpen ("Cocoa.framework/Cocoa", false);
+#ifdef __APPLE__
   proxy->defineCFunc ("fillRedCB", fillRed);
   proxy->defineCFunc ("gstRectFill", gst_rectFill);
+#endif
 
 }
 
