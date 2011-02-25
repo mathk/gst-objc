@@ -1,6 +1,5 @@
-#import <Cocoa/Cocoa.h>
-
 #ifdef __APPLE__
+#import <Cocoa/Cocoa.h>
 
 @interface NSWindow (gst)
 
