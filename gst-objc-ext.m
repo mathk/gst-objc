@@ -1,6 +1,6 @@
 #import "gst-objc-ext.h"
 
-#ifdef __APPLE__
+
 
 @implementation NSWindow (gst)
 
@@ -27,17 +27,18 @@
 }
 @end
 
+//#ifdef __APPLE__
 void
 fillRed (id self, SEL _cmd, NSRect rect)
 {
   [[NSColor redColor] set];
   NSRectFill ([self bounds]);
 }
-
+//#endif // __APPLE__
 void
 gst_rectFill (NSRect * rect)
 {
   NSRectFill (NSMakeRect (rect->origin.x, rect->origin.y, rect->size.width, rect->size.height));
 }
 
-#endif // __APPLE__
+

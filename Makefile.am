@@ -1,6 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = $(GST_CFLAGS)
+AM_OBJCFLAGS = $(GNUSTEP_CFLAGS)
 
 ## Example:
 ##
@@ -12,6 +13,7 @@ AM_CPPFLAGS = $(GST_CFLAGS)
 ## digest_la_SOURCES = digest.c md5.c sha1.c
 ## digest_la_LDFLAGS = $(gst_module_ldflags)
 
+#include $(GNUSTEP_MAKEFILES)/common.make
 
 lib_LTLIBRARIES = libgstobjc.la
 libgstobjc_la_SOURCES = gst-objc.m gst-objc-ext.m gst-objc-ext.h
