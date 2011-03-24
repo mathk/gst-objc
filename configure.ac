@@ -10,11 +10,19 @@ GST_PACKAGE_ENABLE([Objc], [gst-objc])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([gst], [chmod +x gst])
+
+dnl ------------------------------- PROGRAMS ------------------
+{ echo; echo "${term_bold}Build Tools:${term_norm}"; } >& AS_MESSAGE_FD
+
 AC_PROG_LIBTOOL
-AC_SUBST(OBJC, [$CC])
-AC_SUBST(OBJCFLAGS, [$CFLAGS])
-AC_SUBST(GNUSTEP_CFLAGS)
-AC_SUBST(OBJCLIBS)
+PKG_PROG_PKG_CONFIG
+
+PKG_CHECK_MODULES([LIBFFI], [libffi], [HAVE_LIBFFI=yes])
+if test "no$HAVE_LIBFFI" == no
+then
+	 AC_MSG_ERROR([libffi is missing. Try to install it before])
+fi
+
 _AM_DEPENDENCIES(OBJC)
 AC_CANONICAL_HOST
 LDFLAGS=-module
@@ -29,5 +37,9 @@ case $host in
      		  GNUSTEP_CFLAGS=`$GNUSTEP_CONFIG --objc-flags` ;;
 esac
 
+AC_SUBST(OBJC, [$CC])
+AC_SUBST(OBJCFLAGS, [$CFLAGS])
+AC_SUBST(GNUSTEP_CFLAGS)
+AC_SUBST(OBJCLIBS)
 AC_SUBST(LIBTOOL_DEPS)
 AC_OUTPUT
