@@ -16,10 +16,10 @@ gst_initModule (VMProxy * proxy)
   proxy->dlOpen ("Cocoa.framework/Cocoa", false);
 #else // __APPLE__
   proxy->dlOpen ("libgnustep-base", false);
- // proxy->defineCFunc ("objc_msgSend", );
 #endif  // __APPLE__
   proxy->defineCFunc ("fillRedCB", fillRed);
   proxy->defineCFunc ("gstRectFill", gst_rectFill);
+  proxy->defineCFunc ("sendMsg", LKSendMessage);
   NSLog (@"Load complete");
 }
 
