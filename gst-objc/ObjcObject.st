@@ -17,7 +17,7 @@ Object subclass: ObjcObject [
     ]
 
     privObjcClass [
-	^ObjcRuntime objectGetClass: self opjcPtr
+	^ObjcRuntime objectGetClass: self objcPtr
     ]
 
     isObjc [
@@ -39,7 +39,7 @@ Object subclass: ObjcObject [
 	    objcMsgSend: objcPtr 
 	    selector: objcSel 
 	    args: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
-	^return = objcSel
+	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]
     ]
@@ -51,7 +51,7 @@ Object subclass: ObjcObject [
 	    sel: ObjcRuntime selRegisterName: selector
 	    argc: arguments size
 	    argv: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
-	^return = objcSel
+	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]
     ]
