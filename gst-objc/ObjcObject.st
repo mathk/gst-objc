@@ -16,6 +16,10 @@ Object subclass: ObjcObject [
 	    yourself
     ]
 
+    privObjcClass [
+	^ObjcRuntime objectGetClass: self opjcPtr
+    ]
+
     isObjc [
 	^true
     ]
@@ -25,12 +29,28 @@ Object subclass: ObjcObject [
     ]
 
     send: selector with: arguments [
+	self sendGNU: selector with: arguments
+    ]
+
+    sendApple: selector with: arguments [
 	| objcSel return |
 	objcSel := ObjcRuntime selRegisterName: selector.
 	return := ObjcRuntime 
 	    objcMsgSend: objcPtr 
 	    selector: objcSel 
 	    args: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
+	^return = objcSel
+            ifFalse: [self class basicFromPtr: return]
+	    ifTrue: [self]
+    ]
+
+    sendGNU: selector with: arguments [
+	| return |
+	return = ObjcRuntime objcGNUMsgSendClass: self privObjcClass
+	    receiver: self objcPtr
+	    sel: ObjcRuntime selRegisterName: selector
+	    argc: arguments size
+	    argv: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
 	^return = objcSel
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]

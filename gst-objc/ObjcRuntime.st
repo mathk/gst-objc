@@ -10,6 +10,10 @@ Object subclass: ObjcRuntime [
 	objcGetClass: name [
 	    <cCall: 'objc_getClass' returning: #cObject args: #( #string )>
 	]
+
+	objectGetClass: id [
+	    <cCall:'object_getClass' returning: #cObject args: #( #cObject )>
+	]
     
 	classCreateInstance: aClass size: anInt [
 	    <cCall: 'class_createInstance' returning: #cObject args: #( #cObject #int)>
@@ -30,11 +34,8 @@ Object subclass: ObjcRuntime [
 	objcMsgSend: receiver selector: sel args: args [
 	    <cCall: 'objc_msgSend' returning: #cObject args: #( #cObject #cObject #variadic )>
 	]
-    
-	objcGNUMsgSend: receiver selector: sel args: args [
-	]
 
-	primObjcGNUMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
+	objcGNUMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
 	    <cCall: 'sendMsg' returning: #cObject args: #( #cObject #cObject #cObject #uint #variadic )>
 	]
 
