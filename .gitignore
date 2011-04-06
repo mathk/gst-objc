@@ -9,7 +9,6 @@ configure
 *.star
 *.tmp
 *.frag
-m4
 libtool
 ltmain.sh
 missing

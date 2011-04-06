@@ -17,6 +17,8 @@ dnl ------------------------------- PROGRAMS ------------------
 AC_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG
 
+GST_HAVE_GMP
+
 PKG_CHECK_MODULES([LIBFFI], [libffi], [HAVE_LIBFFI=yes])
 if test "no$HAVE_LIBFFI" == no
 then
