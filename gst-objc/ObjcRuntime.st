@@ -36,7 +36,7 @@ Object subclass: ObjcRuntime [
 	]
 
 	objcGNUMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
-	    <cCall: 'sendMsg' returning: #cObject args: #( #cObject #cObject #cObject #uint #variadic )>
+	    <cCall: 'sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #cObject )>
 	]
 
 	intObjcMsgSend: receiver selector: sel args: args [
@@ -95,7 +95,7 @@ Object subclass: ObjcRuntime [
 	objcGetClassList [
 	    | bufferType classes buffer |
 	    bufferType := CArrayCType elementType: (CObjectType ptrType) 
-	    numberOfElements: self objcGetClassCount.
+		numberOfElements: self objcGetClassCount.
 	    buffer := bufferType gcNew.
 	    self primObjcGetClassList: buffer size: bufferType numberOfElements.
 	    classes := OrderedCollection new.

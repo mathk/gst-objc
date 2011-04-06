@@ -15,7 +15,7 @@
  * Throws an exception if any of the arguments can't be unboxed to the
  * required type for the message send.
  */
-id LKSendMessage(NSString *className, id receiver, NSString *selName,
+id LKSendMessage(Class cls, id receiver, char *selName,
                  unsigned int argc, id *args);
 
 /**

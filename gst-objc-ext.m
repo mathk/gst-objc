@@ -1,4 +1,5 @@
 #import "gst-objc-ext.h"
+#import "LKObject.h"
 
 
 
@@ -34,6 +35,13 @@ fillRed (id self, SEL _cmd, NSRect rect)
   [[NSColor redColor] set];
   NSRectFill ([self bounds]);
 }
+
+NSString *
+toNSString(char * string)
+{
+  return [NSString stringWithCString: string];
+}
+
 //#endif // __APPLE__
 void
 gst_rectFill (NSRect * rect)

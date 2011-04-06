@@ -6,7 +6,7 @@
 #ifdef __APPLE__
 #include <objc/runtime.h>
 #endif
-
+static NSAutoreleasePool* pool;
 
 void
 gst_initModule (VMProxy * proxy)
@@ -20,6 +20,10 @@ gst_initModule (VMProxy * proxy)
   proxy->defineCFunc ("fillRedCB", fillRed);
   proxy->defineCFunc ("gstRectFill", gst_rectFill);
   proxy->defineCFunc ("sendMsg", LKSendMessage);
+  proxy->defineCFunc ("toNSString", toNSString);
+  pool = [[NSAutoreleasePool alloc] init];
+  /*NSApplication *myApplication;
+    myApplication = [NSApplication sharedApplication];*/
   NSLog (@"Load complete");
 }
 

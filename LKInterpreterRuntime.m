@@ -108,10 +108,10 @@ static ffi_type *FFITypeForObjCType(const char *typestr)
 			return &ffi_type_void;
 		case '(':
 		case '^':
-			if (strncmp(typestr, @encode(LKObjectPtr), strlen(@encode(LKObjectPtr))) != 0)
+		  /*	if (strncmp(typestr, @encode(LKObjectPtr), strlen(@encode(LKObjectPtr))) != 0)
 			{
 				break;
-			}
+				}*/
 		case '@':
 		case '#':
 			return &ffi_type_pointer;
@@ -291,13 +291,15 @@ static void UnboxValue(id value, void *dest, const char *objctype)
 	}
 }
 
-id LKSendMessage(NSString *className, id receiver, NSString *selName,
+id LKSendMessage(Class cls, id receiver, char *selChar,
                  unsigned int argc, id *args)
 {
 	if (receiver == nil)
 	{
 		return nil;
 	}
+	NSString* selName = [NSString stringWithCString: selChar];
+	
 	SEL sel = sel_getUid([selName UTF8String]);
 	NSMethodSignature *sig = [receiver methodSignatureForSelector: sel];
 	if (nil == sig)
@@ -313,9 +315,8 @@ id LKSendMessage(NSString *className, id receiver, NSString *selName,
 	
 	void *methodIMP;
 #ifdef GNU_RUNTIME
-	if (className)
+	if (cls)
 	{
-		Class cls = NSClassFromString(className);
 		if (class_isMetaClass(object_getClass(receiver)))
 		{
 			cls = object_getClass(cls);

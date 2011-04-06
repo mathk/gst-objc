@@ -45,12 +45,16 @@ Object subclass: ObjcObject [
     ]
 
     sendGNU: selector with: arguments [
-	| return |
-	return = ObjcRuntime objcGNUMsgSendClass: self privObjcClass
+	| return bufferType buffer |
+	bufferType := CArrayCType elementType: (CObjectType ptrType) 
+	    numberOfElements: arguments size.
+	buffer := bufferType gcNew.
+	arguments doWithIndex: [ :each :i | buffer at: i put: (each isObjc ifTrue: [each objcPtr] ifFalse: [each])  ].
+	return := ObjcRuntime objcGNUMsgSendClass: nil
 	    receiver: self objcPtr
-	    sel: ObjcRuntime selRegisterName: selector
+	    sel: selector
 	    argc: arguments size
-	    argv: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
+	    argv: buffer.
 	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]
@@ -101,10 +105,11 @@ Object extend [
 ]
 
 String extend [
+    primAsNSString [
+	<cCall: 'toNSString' returnning: #cObject args: #( #self )>
+    ]
+
     asNSString [
-	| nsString string |
-	nsString := Objc.ObjcRuntime at: 'NSString'.
-	string := nsString send: #stringWithCString: with: {self asCData: CStringType}.
-	^string
+	^Objc.ObjcObject basicFromPtr: self primAsNSString
     ]
 ]
