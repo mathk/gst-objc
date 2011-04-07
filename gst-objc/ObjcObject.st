@@ -46,10 +46,16 @@ Object subclass: ObjcObject [
 
     sendGNU: selector with: arguments [
 	| return bufferType buffer |
-	bufferType := CArrayCType elementType: (CObjectType ptrType) 
+	bufferType := CArrayCType elementType: CLongType
 	    numberOfElements: arguments size.
 	buffer := bufferType gcNew.
-	arguments doWithIndex: [ :each :i | buffer at: i put: (each isObjc ifTrue: [each objcPtr] ifFalse: [each])  ].
+	arguments doWithIndex: [ :each :i | 
+	    each isObjc ifTrue: [buffer at: i put: each objcPtr] 
+			ifFalse: [
+			   " each isInteger ifTrue: [buffer at: i put: each type: CIntType valueType]
+					   ifFalse: ["buffer at: i put: each"]"
+			]
+	].
 	return := ObjcRuntime objcGNUMsgSendClass: nil
 	    receiver: self objcPtr
 	    sel: selector
