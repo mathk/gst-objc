@@ -49,11 +49,12 @@ Object subclass: ObjcObject [
 	bufferType := CArrayCType elementType: CLongType
 	    numberOfElements: arguments size.
 	buffer := bufferType gcNew.
+	buffer address printNl.
 	arguments doWithIndex: [ :each :i | 
-	    each isObjc ifTrue: [buffer at: i put: each objcPtr] 
+	    each isObjc ifTrue: [buffer at: i - 1 put: each objcPtr] 
 			ifFalse: [
 			   " each isInteger ifTrue: [buffer at: i put: each type: CIntType valueType]
-					   ifFalse: ["buffer at: i put: each"]"
+					   ifFalse: ["buffer at: i - 1 put: each "type: CLongType valueType]"
 			]
 	].
 	return := ObjcRuntime objcGNUMsgSendClass: nil
