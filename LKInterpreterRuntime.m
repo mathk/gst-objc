@@ -329,7 +329,7 @@ id LKSendMessage(Class cls, id receiver, char *selChar,
 		methodIMP = objc_msg_lookup(receiver, sel);
 	}
 #else
-	if (className)
+	if (cls)
 	{
 		switch (*[sig methodReturnType])
 		{
