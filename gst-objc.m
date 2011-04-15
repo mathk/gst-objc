@@ -8,6 +8,7 @@
 #endif
 static NSAutoreleasePool* pool;
 
+
 void
 gst_initModule (VMProxy * proxy)
 {
@@ -17,13 +18,10 @@ gst_initModule (VMProxy * proxy)
 #else // __APPLE__
   proxy->dlOpen ("libgnustep-base", false);
 #endif  // __APPLE__
-  proxy->defineCFunc ("fillRedCB", fillRed);
-  proxy->defineCFunc ("gstRectFill", gst_rectFill);
-  proxy->defineCFunc ("sendMsg", LKSendMessage);
-  proxy->defineCFunc ("toNSString", toNSString);
+  proxy->defineCFunc ("objc_sendMsg", LKSendMessage);
+  proxy->defineCFunc ("objc_toNSString", gst_toNSString);
+  proxy->defineCFunc ("objc_prepareArguments", gst_prepareArguments);
   pool = [[NSAutoreleasePool alloc] init];
-  /*NSApplication *myApplication;
-    myApplication = [NSApplication sharedApplication];*/
   NSLog (@"Load complete");
 }
 

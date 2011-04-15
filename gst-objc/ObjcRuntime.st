@@ -36,7 +36,7 @@ Object subclass: ObjcRuntime [
 	]
 
 	objcGNUMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
-	    <cCall: 'sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #{CArray} )>
+	    <cCall: 'objc_sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #{CArray} )>
 	]
 
 	intObjcMsgSend: receiver selector: sel args: args [
@@ -108,6 +108,6 @@ Object subclass: ObjcRuntime [
 	objcGetClassCount [
 	    ^self primObjcGetClassList: nil size: 0
 	]
-]
+    ]
 
 ]

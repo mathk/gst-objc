@@ -210,7 +210,7 @@ static void UnboxValue(id value, void *dest, const char *objctype)
 			*(char*)dest = [value charValue];
 			break;
 		case 'C':
-			*(unsigned char*)dest = [value unsignedCharValue];
+			*(unsigned char*)dest = (unsigned char)value;
 			break;
 		case 's':
 			*(short*)dest = [value shortValue];
@@ -219,10 +219,10 @@ static void UnboxValue(id value, void *dest, const char *objctype)
 			*(unsigned short*)dest = [value unsignedShortValue];
 			break;
 		case 'i':
-			*(int*)dest = [value intValue];
+			*(int*)dest = (int)value;
 			break;
 		case 'I':
-			*(unsigned int*)dest = [value unsignedIntValue];
+			*(unsigned int*)dest = (unsigned int)value;
 			break;
 		case 'l':
 			*(long*)dest = [value longValue];
@@ -265,7 +265,7 @@ static void UnboxValue(id value, void *dest, const char *objctype)
 		{
 			if (0 == strncmp(objctype, "{_NSRect", 8))
 			{
-				*(NSRect*)dest = [value rectValue];
+			        *(NSRect*)dest = *((NSRect*)value);
 				break;
 			}
 			else if (0 == strncmp(objctype, "{_NSRange", 9))

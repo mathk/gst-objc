@@ -1,19 +1,6 @@
 #import "gst-objc-ext.h"
 #import "LKObject.h"
 
-
-
-@implementation NSWindow (gst)
-
-- (id) initWithContentRectPointer: (NSRect*) rect styleMask: (NSUInteger) windowAtyle backing: (NSBackingStoreType) bufferingType defer: (BOOL)deferCreation
-{
-  return [self initWithContentRect: NSMakeRect (rect->origin.x, rect->origin.y, rect->size.width, rect->size.height) 
-			 styleMask: windowAtyle 
-			   backing: bufferingType 
-			     defer: deferCreation];
-}
-@end
-
 @implementation NSView (gst)
 - (NSRect *) gstBounds
 {
@@ -28,21 +15,19 @@
 }
 @end
 
-//#ifdef __APPLE__
 void
-fillRed (id self, SEL _cmd, NSRect rect)
+gst_prepareArguments(OOP args, OOP recipient)
 {
-  [[NSColor redColor] set];
-  NSRectFill ([self bounds]);
+  
 }
+
 
 NSString *
-toNSString(char * string)
+gst_toNSString(char * string)
 {
-  return [NSString stringWithCString: string];
+  return [NSString stringWithUTF8String: string];
 }
 
-//#endif // __APPLE__
 void
 gst_rectFill (NSRect * rect)
 {

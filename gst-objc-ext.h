@@ -1,19 +1,12 @@
-//#ifdef __APPLE__
+#include <gstpub.h>
 #import <Cocoa/Cocoa.h>
 #import "LKObject.h"
 
-@interface NSWindow (gst)
-
-- (id) initWithContentRectPointer: (LKObjectPtr) rect styleMask: (NSUInteger) windowAtyle backing: (NSBackingStoreType) bufferingType defer: (BOOL)deferCreation;
-
-@end
 
 @interface NSView (gs)
 - (NSRect*) gstBounds;
 @end
 
-void fillRed (id, SEL, NSRect);
-void gst_rectFill (NSRect*);
-NSString* toNSString (char * string);
-
-//#endif // __APPLE__
+/* Build a NSString from  a C string */
+NSString* gst_toNSString (char * string);
+void gst_prepareArguments(OOP args, OOP recipient);

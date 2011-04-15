@@ -16,6 +16,10 @@ Object subclass: ObjcObject [
 	    yourself
     ]
 
+    doesNotUnderstand: aMessage [
+	^self send: aMessage selector with: aMessage argument
+    ]
+
     privObjcClass [
 	^ObjcRuntime objectGetClass: self objcPtr
     ]
@@ -44,17 +48,21 @@ Object subclass: ObjcObject [
 	    ifTrue: [self]
     ]
 
+    prepareArgument: array into: recipient [
+	<cCall: 'objc_prepareArguments' returning: #cObject args: #(#smalltalk #smalltalk)>
+    ]
+
     sendGNU: selector with: arguments [
 	| return bufferType buffer |
 	bufferType := CArrayCType elementType: CLongType
 	    numberOfElements: arguments size.
-	buffer := bufferType gcNew.
+	buffer := bufferType new.
 	buffer address printNl.
 	arguments doWithIndex: [ :each :i | 
-	    each isObjc ifTrue: [buffer at: i - 1 put: each objcPtr] 
+	    each isObjc ifTrue: [buffer at: i - 1 put: each objcPtr address " type: CObjectType valueType"] 
 			ifFalse: [
-			   " each isInteger ifTrue: [buffer at: i put: each type: CIntType valueType]
-					   ifFalse: ["buffer at: i - 1 put: each "type: CLongType valueType]"
+			   each isInteger ifTrue: [buffer at: i-1 put: each "type: CIntType valueType"]
+					   ifFalse: [buffer at: i - 1 put: each type: CLongType valueType]
 			]
 	].
 	return := ObjcRuntime objcGNUMsgSendClass: nil
@@ -62,6 +70,7 @@ Object subclass: ObjcObject [
 	    sel: selector
 	    argc: arguments size
 	    argv: buffer.
+	buffer free.
 	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]
@@ -87,7 +96,7 @@ Object subclass: ObjcObject [
     objcPtr: aCObject [
 	<category: 'ptivate'>
 	ObjcRuntime retain: aCObject.
-	self basicObjcPtr: aCObject
+ 	self basicObjcPtr: aCObject
     ]
     
     objcPtr [
@@ -113,10 +122,12 @@ Object extend [
 
 String extend [
     primAsNSString [
-	<cCall: 'toNSString' returnning: #cObject args: #( #self )>
+	<category: 'Objc'>
+	<cCall: 'objc_toNSString' returning: #cObject args: #( #self )>
     ]
 
     asNSString [
+	<category: 'Objc'>
 	^Objc.ObjcObject basicFromPtr: self primAsNSString
     ]
 ]
