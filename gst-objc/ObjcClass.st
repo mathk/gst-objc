@@ -1,6 +1,6 @@
 ObjcObject subclass: ObjcClass [
     
-    ObjcObject class >> fromPtr: aCObject [
+    ObjcClass class >> fromPtr: aCObject [
 	<category: 'private'>
 	^self basicFromPtr: aCObject
     ]

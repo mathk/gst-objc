@@ -67,14 +67,14 @@ end
 # Commands to print the contents of Smalltalk objects
 # ------------------------------------------------------
 
-define po
+define pos
 set unwindonsignal on
 call _gst_print_object($arg0)
 call (void)fflush(stdout)
 set unwindonsignal off
 printf "\n"
 end
-document po
+document pos
 Print a representation of a Smalltalk object.
 
 Syntax: po EXPR
@@ -213,9 +213,9 @@ end
 # Initializing gdb
 # ------------------------------------------------------
 
-handle SIGSEGV noprint
-handle SIGUSR2 noprint
+#handle SIGSEGV noprint
+#handle SIGUSR2 noprint
 
 # Don't let abort actually run, as it will make stdio
 # stop working and therefore the commands above as well.
-b abort
+#b abort

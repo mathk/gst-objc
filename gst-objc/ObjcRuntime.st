@@ -8,58 +8,67 @@ Object subclass: ObjcRuntime [
 	]
 
 	objcGetClass: name [
+	    <category: 'class'>
 	    <cCall: 'objc_getClass' returning: #cObject args: #( #string )>
 	]
 
 	objectGetClass: id [
+	    <category: 'instance'>
 	    <cCall:'object_getClass' returning: #cObject args: #( #cObject )>
 	]
     
 	classCreateInstance: aClass size: anInt [
-	    <cCall: 'class_createInstance' returning: #cObject args: #( #cObject #int)>
+	    <category: 'class'>
+	    ^self primCreateInstance: aClass size: anInt zone: 0
+	]
+
+        primCreateInstance: aClass size: anInt zone: default [
+	    <category: 'private class'>
+	    <cCall: 'NSAllocateObject'  returning: #cObject args: #( #cObject #int #int)>
 	]
     
 	selRegisterName: name [
+	    <category: 'runtime query'>
 	    <cCall: 'sel_registerName' returning: #cObject args: #( #string )>
 	]
     
 	primObjcGetClassList: buffer size: length [
+	    <category: 'runtime query'>
 	    <cCall: 'objc_getClassList' returning: #int args: #(#cObject #int)>
 	]
 
 	classGetName: aClass [
+	    <category: 'class'>
 	    <cCall: 'class_getName' returning: #string args: #( #cObject )>
 	]
-    
-	objcMsgSend: receiver selector: sel args: args [
-	    <cCall: 'objc_msgSend' returning: #cObject args: #( #cObject #cObject #variadic )>
-	]
 
-	objcGNUMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
-	    <cCall: 'objc_sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #{CArray} )>
+	objcMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
+	    <category: 'instance'>
+	    <cCall: 'objc_sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #unknown )>
 	]
-
-	intObjcMsgSend: receiver selector: sel args: args [
-	    <cCall: 'objc_msgSend' returning: #int args: #( #cObject #cObject #variadic )>
-	]
-
+	
 	retain: receiver [
-	    <cCall: 'CFRetain' returning: #cObject args: #( #cObject )>
+	    <category: 'instance'>
+	    <cCall: 'objc_retain' returning: #void args: #( #cObject )>
 	]
 
 	release: receiver [
-	    <cCall: 'CFRelease' returning: #void args: #( #cObject )>
+	    <category: 'instance'>
+	    <cCall: 'objc_release' returning: #void args: #( #cObject )>
 	]
 
 	log: nsString [
+	    <category: 'instance'>
 	    <cCall: 'NSLog' returning: #void args: #( #cObject )>
 	]
 
 	log: nsString with: arg [
+	    <category: 'instance'>
 	    <cCall: 'NSLog' returning: #void args: #( #cObject #cObject )>
 	]
 
 	logObject: object [
+	    <category: 'instance'>
 	    self log: '%@' asNSString objcPtr with: object
 	]
 

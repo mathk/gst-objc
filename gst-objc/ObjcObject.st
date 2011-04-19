@@ -53,24 +53,24 @@ Object subclass: ObjcObject [
     ]
 
     sendGNU: selector with: arguments [
-	| return bufferType buffer |
-	bufferType := CArrayCType elementType: CLongType
+	| return "bufferType buffer" |
+	"bufferType := CArrayCType elementType: CLongType
 	    numberOfElements: arguments size.
 	buffer := bufferType new.
 	buffer address printNl.
 	arguments doWithIndex: [ :each :i | 
-	    each isObjc ifTrue: [buffer at: i - 1 put: each objcPtr address " type: CObjectType valueType"] 
+	    each isObjc ifTrue: [buffer at: i - 1 put: each objcPtr address  type: CObjectType valueType] 
 			ifFalse: [
-			   each isInteger ifTrue: [buffer at: i-1 put: each "type: CIntType valueType"]
+			   each isInteger ifTrue: [buffer at: i-1 put: each type: CIntType valueType]
 					   ifFalse: [buffer at: i - 1 put: each type: CLongType valueType]
 			]
-	].
-	return := ObjcRuntime objcGNUMsgSendClass: nil
+	]."
+	return := ObjcRuntime objcMsgSendClass: nil
 	    receiver: self objcPtr
 	    sel: selector
 	    argc: arguments size
-	    argv: buffer.
-	buffer free.
+	    argv: arguments.
+"	buffer free."
 	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]
 	    ifTrue: [self]

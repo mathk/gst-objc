@@ -16,7 +16,7 @@ AM_OBJCFLAGS = $(GNUSTEP_CFLAGS)
 #include $(GNUSTEP_MAKEFILES)/common.make
 
 lib_LTLIBRARIES = libgstobjc.la
-libgstobjc_la_SOURCES = gst-objc.m gst-objc-ext.m gst-objc-ext.h LKTypeHelpers.m \
+libgstobjc_la_SOURCES = gst-objc.m gst-objc-ext.m gst-objc-ext.h # LKTypeHelpers.m \
 			LKTypeHelpers.h LKInterpreter.m LKInterpreter.h LKInterpreterRuntime.m \
 			LKObject.h  BlockClosure.h BlockClosure.m BlockContext.h \
 			BoxedFloat.h BoxedFloat.m \
