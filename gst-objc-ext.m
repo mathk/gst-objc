@@ -128,7 +128,7 @@ gst_FFITypeForObjCType(const char *typestr)
 	return NULL;
 }
 
-static void UnboxValue(long long value, void *dest, const char *objctype)
+void gst_unboxValue(long long value, void *dest, const char *objctype)
 {
   gst_SkipQualifiers(&objctype);
   
@@ -215,7 +215,7 @@ static void UnboxValue(long long value, void *dest, const char *objctype)
     }
 }
 
-static ObjcType BoxValue(void *value, const char *typestr)
+ObjcType gst_boxValue(void *value, const char *typestr)
 {
   gst_SkipQualifiers(&typestr);
   ObjcType ret;
@@ -373,13 +373,14 @@ gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass)
   for (i = 0; i < argc; i++)
     {
       const char *objCType = [sig getArgumentTypeAtIndex: i + 2];
-      gst_UnboxValue(args[i], unboxedArgumentsBuffer[i + 2], objCType);
+      gst_unboxValue(args[i], unboxedArgumentsBuffer[i + 2], objCType);
       unboxedArguments[i + 2] = unboxedArgumentsBuffer[i + 2];
     }
 
   char msgSendRet[[sig methodReturnLength]];
   ffi_call(&cif, methodIMP, &msgSendRet, unboxedArguments);
-	
+  
+  return gst_boxValue(msgSendRet, [sig methodReturnType]);
 }
 
 void

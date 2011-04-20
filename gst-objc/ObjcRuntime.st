@@ -1,3 +1,7 @@
+CStruct subclass: ObjcType [
+    <declaration: #((#value #long))>
+]
+
 Object subclass: ObjcRuntime [
 
     ObjcRuntime class [
@@ -42,9 +46,9 @@ Object subclass: ObjcRuntime [
 	    <cCall: 'class_getName' returning: #string args: #( #cObject )>
 	]
 
-	objcMsgSendClass: class receiver: receiver sel: selector argc: aInt argv: args [
+	objcMsgSend: receiver sel: selector argc: aInt argv: args super: class [
 	    <category: 'instance'>
-	    <cCall: 'objc_sendMsg' returning: #cObject args: #( #cObject #cObject #string #uint #unknown )>
+	    <cCall: 'objc_sendMsg' returning: #{ObjcType} args: #( #cObject #cObject #uint #smalltalk #cObject )>
 	]
 	
 	retain: receiver [

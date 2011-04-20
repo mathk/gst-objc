@@ -94,7 +94,7 @@ end
 
 
 define ofield
-po (($arg0)((OOP)$arg1)->object)->$arg2
+pos (($arg0)((OOP)$arg1)->object)->$arg2
 end
 document ofield
 Access a field of a Smalltalk object and print its contents.

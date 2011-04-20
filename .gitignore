@@ -4,6 +4,7 @@ aclocal.m4
 config.*
 configure
 *.o
+*.d
 *.lo
 *.la
 *.star

@@ -15,10 +15,10 @@ typedef union ObjcType {
   unsigned int uintType;
   long longType;
   unsigned long ulongType;
-  long long longlongType;
-  unsigned long long ulonglongType;
-  float floatTYpe;
-  double doubleType;
+  // long long longlongType;
+  // unsigned long long ulonglongType;
+  // float floatTYpe;
+  // double doubleType;
   SEL selType;
 } ObjcType;
 

@@ -65,11 +65,11 @@ Object subclass: ObjcObject [
 					   ifFalse: [buffer at: i - 1 put: each type: CLongType valueType]
 			]
 	]."
-	return := ObjcRuntime objcMsgSendClass: nil
-	    receiver: self objcPtr
-	    sel: selector
+	return := ObjcRuntime objcMsgSend: self objcPtr
+	    sel: (ObjcRuntime selRegisterName: selector)
 	    argc: arguments size
-	    argv: arguments.
+	    argv: arguments
+	    super: nil.
 "	buffer free."
 	^return = objcPtr
             ifFalse: [self class basicFromPtr: return]

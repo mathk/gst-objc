@@ -25,13 +25,6 @@ gst_initModule (VMProxy * proxy)
   proxy->defineCFunc ("objc_retain", gst_retain);
   proxy->defineCFunc ("objc_release", gst_release);
   pool = [[NSAutoreleasePool alloc] init];
-
-  [NSApplication sharedApplication];
-  NSWindow* wnd = [[NSWindow alloc] initWithContentRect: NSMakeRect(0.0, 0.0, 100.0, 100.0)
-					      styleMask: 15
-						backing: 2
-						  defer: 1];
-  [wnd setTitle: @"Test it"];
   NSLog (@"Load complete");
 }
 
