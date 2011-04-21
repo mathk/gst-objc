@@ -22,6 +22,7 @@ gst_initModule (VMProxy * proxy)
   proxy->defineCFunc ("objc_sendMsg", gst_sendMessage);
   proxy->defineCFunc ("objc_toNSString", gst_toNSString);
   proxy->defineCFunc ("objc_prepareArguments", gst_prepareArguments);
+  proxy->defineCFunc ("objc_sendReturnLenth", gst_sendMessageReturnLength);
   proxy->defineCFunc ("objc_retain", gst_retain);
   proxy->defineCFunc ("objc_release", gst_release);
   pool = [[NSAutoreleasePool alloc] init];

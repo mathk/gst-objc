@@ -277,9 +277,18 @@ ObjcType gst_boxValue(void *value, const char *typestr)
     }
 }
 
+/* Return the length in byte of 
+   the return object for a message send */
+int
+gst_sendMessageReturnLength (id receiver, SEL selector)
+{
+  NSMethodSignature *sig = [receiver methodSignatureForSelector: selector];
+  return [sig methodReturnLength];
+}
 
-ObjcType
-gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass)
+/* Perform a Objective-C message send */
+void
+gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass, char* result)
 {
   void *methodIMP;
   if (receiver == nil)
@@ -377,10 +386,10 @@ gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass)
       unboxedArguments[i + 2] = unboxedArgumentsBuffer[i + 2];
     }
 
-  char msgSendRet[[sig methodReturnLength]];
-  ffi_call(&cif, methodIMP, &msgSendRet, unboxedArguments);
+  //char msgSendRet[[sig methodReturnLength]];
+  ffi_call(&cif, methodIMP, &result, unboxedArguments);
   
-  return gst_boxValue(msgSendRet, [sig methodReturnType]);
+  //return gst_boxValue(msgSendRet, [sig methodReturnType]);
 }
 
 void

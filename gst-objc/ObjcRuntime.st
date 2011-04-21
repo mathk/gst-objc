@@ -50,6 +50,10 @@ Object subclass: ObjcRuntime [
 	    <category: 'instance'>
 	    <cCall: 'objc_sendMsg' returning: #{ObjcType} args: #( #cObject #cObject #uint #smalltalk #cObject )>
 	]
+
+	objcMsgReturnLength: receiver sel: selector [
+	    <cCall: 'objc_sendReturnLength' returning: #int args: #( #cObject #cObject )>
+	]
 	
 	retain: receiver [
 	    <category: 'instance'>
