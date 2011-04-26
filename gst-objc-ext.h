@@ -31,5 +31,6 @@ void gst_retain(id object);
 void gst_release(id object);
 NSString* gst_toNSString (char * string);
 void gst_prepareArguments(OOP args, OOP recipient);
-int gst_sendMessageReturnLength (id receiver, SEL selector); 
-void gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass);
+int gst_sendMessageReturnSize (id receiver, SEL selector);
+char* gst_sendMessageReturnType (id receiver, SEL selector);
+void gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass, char* result);

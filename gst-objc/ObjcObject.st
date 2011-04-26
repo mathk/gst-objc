@@ -32,11 +32,11 @@ Object subclass: ObjcObject [
 	^false
     ]
 
-    send: selector with: arguments [
+ "   send: selector with: arguments [
 	self sendGNU: selector with: arguments
-    ]
+    ]"
 
-    sendApple: selector with: arguments [
+  "  sendApple: selector with: arguments [
 	| objcSel return |
 	objcSel := ObjcRuntime selRegisterName: selector.
 	return := ObjcRuntime 
@@ -50,23 +50,12 @@ Object subclass: ObjcObject [
 
     prepareArgument: array into: recipient [
 	<cCall: 'objc_prepareArguments' returning: #cObject args: #(#smalltalk #smalltalk)>
-    ]
+    ]"
 
-    sendGNU: selector with: arguments [
-	| return selector |
-	selector := (ObjcRuntime selRegisterName: selector).
-	return := ByteArray new: (ObjcRuntime objcMsgReturnLength: self objcPtr sel: selector).
-	ObjcRuntime objcMsgSend: self objcPtr
-	    sel: (ObjcRuntime selRegisterName: selector)
-	    argc: arguments size
-	    argv: arguments
-	    super: nil
-	    return: return. 
-
-	^self boxReturn: return
-    ]
-
-    boxReturn: return [
+    send: selector with: arguments [
+	| message |
+	message := ObjcMessage receiver: self objcPtr selector: (ObjcRuntime selRegisterName: selector).
+	^message performWith: arguments
     ]
 
     intSend: selector with: arguments [

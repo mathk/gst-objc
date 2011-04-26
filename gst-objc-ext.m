@@ -215,7 +215,7 @@ void gst_unboxValue(long long value, void *dest, const char *objctype)
     }
 }
 
-ObjcType gst_boxValue(void *value, const char *typestr)
+/*ObjcType gst_boxValue(void *value, const char *typestr)
 {
   gst_SkipQualifiers(&typestr);
   ObjcType ret;
@@ -275,15 +275,23 @@ ObjcType gst_boxValue(void *value, const char *typestr)
       ret.idType = [NSValue valueWithBytes: value objCType: typestr];
       return ret;
     }
-}
+    }
+*/
 
 /* Return the length in byte of 
    the return object for a message send */
 int
-gst_sendMessageReturnLength (id receiver, SEL selector)
+gst_sendMessageReturnSize (id receiver, SEL selector)
 {
   NSMethodSignature *sig = [receiver methodSignatureForSelector: selector];
   return [sig methodReturnLength];
+}
+
+char*
+gst_sendMessageReturnType (id receiver, SEL selector)
+{
+    NSMethodSignature *sig = [receiver methodSignatureForSelector: selector];
+    return [sig methodReturnType];
 }
 
 /* Perform a Objective-C message send */

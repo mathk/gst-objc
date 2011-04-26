@@ -46,13 +46,13 @@ Object subclass: ObjcRuntime [
 	    <cCall: 'class_getName' returning: #string args: #( #cObject )>
 	]
 
-	objcMsgSend: receiver sel: selector argc: aInt argv: args super: class [
+	objcMsgSend: receiver sel: selector argc: aInt argv: args super: class returning: buffer [
 	    <category: 'instance'>
-	    <cCall: 'objc_sendMsg' returning: #{ObjcType} args: #( #cObject #cObject #uint #smalltalk #cObject )>
+	    <cCall: 'objc_sendMsg' returning: #{ObjcType} args: #( #cObject #cObject #uint #smalltalk #cObject #byteArray )>
 	]
 
-	objcMsgReturnLength: receiver sel: selector [
-	    <cCall: 'objc_sendReturnLength' returning: #int args: #( #cObject #cObject )>
+    	objcMsgReturnType: receiver sel: selector [
+	    <cCall: 'objc_sendReturnLength' returning: #string args: #( #cObject #cObject )>
 	]
 	
 	retain: receiver [
