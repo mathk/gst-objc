@@ -31,9 +31,14 @@ Object subclass: ObjcRuntime [
 	    <cCall: 'NSAllocateObject'  returning: #cObject args: #( #cObject #int #int)>
 	]
     
-	selRegisterName: name [
+	selGetUid: name [
 	    <category: 'runtime query'>
-	    <cCall: 'sel_registerName' returning: #cObject args: #( #string )>
+	    <cCall: 'sel_getUid' returning: #cObject args: #( #string )>
+	]
+
+    	selGetName: name [
+	    <category: 'runtime query'>
+	    <cCall: 'sel_getName' returning: #symbol args: #( #cObject )>
 	]
     
 	primObjcGetClassList: buffer size: length [
@@ -48,7 +53,7 @@ Object subclass: ObjcRuntime [
 
 	objcMsgSend: receiver sel: selector argc: aInt argv: args super: class returning: buffer [
 	    <category: 'instance'>
-	    <cCall: 'objc_sendMsg' returning: #{ObjcType} args: #( #cObject #cObject #uint #smalltalk #cObject #byteArray )>
+	    <cCall: 'objc_sendMsg' returning: #void args: #( #cObject #cObject #int #smalltalk #cObject #byteArrayOut )>
 	]
 
     	objcMsgReturnType: receiver sel: selector [

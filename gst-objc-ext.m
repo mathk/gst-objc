@@ -120,6 +120,7 @@ gst_FFITypeForObjCType(const char *typestr)
 		case '^':
 		case '@':
 		case '#':
+		case '*':
 			return &ffi_type_pointer;
 	}
 	[NSException raise: @"Send"
@@ -184,6 +185,9 @@ void gst_unboxValue(long long value, void *dest, const char *objctype)
       return;
     case 'v':
       *(id*)dest = NULL;
+      return;
+    case '*':
+      *(char**)dest = (char*)value;
       return;
     case '{':
       {
@@ -308,12 +312,12 @@ gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass,
   if (nil == sig)
     {
       [NSException raise: @"Send"
-		  format: @"Couldn't determine type for selector %@", selector];
+		  format: @"Couldn't determine type for selector %s", sel_getName(selector)];
     }
   if (argc + 2 != [sig numberOfArguments])
     {
       [NSException raise: @"Send"
-		  format: @"Tried to call %@ with %d arguments", selector, argc];
+		  format: @"Tried to call %s with %d arguments", sel_getName(selector), argc];
     }
 
 #ifdef GNU_RUNTIME
@@ -395,7 +399,7 @@ gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass,
     }
 
   //char msgSendRet[[sig methodReturnLength]];
-  ffi_call(&cif, methodIMP, &result, unboxedArguments);
+  ffi_call(&cif, methodIMP, result, unboxedArguments);
   
   //return gst_boxValue(msgSendRet, [sig methodReturnType]);
 }

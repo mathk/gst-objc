@@ -4,6 +4,7 @@
 	<module>libgstobjc</module>	
 
 	<filein>ObjcRuntime.st</filein>
+	<filein>ObjcMessage.st</filein>
 	<filein>ObjcObject.st</filein>
 	<filein>ObjcDataType.st</filein>
 	<filein>ObjcAppKit.st</filein>

@@ -17,7 +17,7 @@ Object subclass: ObjcObject [
     ]
 
     doesNotUnderstand: aMessage [
-	^self send: aMessage selector with: aMessage argument
+	^self send: aMessage selector with: aMessage arguments
     ]
 
     privObjcClass [
@@ -54,7 +54,7 @@ Object subclass: ObjcObject [
 
     send: selector with: arguments [
 	| message |
-	message := ObjcMessage receiver: self objcPtr selector: (ObjcRuntime selRegisterName: selector).
+	message := ObjcMessage receiver: self objcPtr selector: (ObjcRuntime selGetUid: selector).
 	^message performWith: arguments
     ]
 
