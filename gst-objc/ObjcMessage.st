@@ -70,7 +70,7 @@ Object subclass: ObjcMessage [
 	ObjcRuntime objcMsgSend: receiver
 	    sel: selector
 	    argc: args size
-	    argv: args
+	    argv: (args collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each]])
 	    super: nil
 	    returning: returnHolder. 
 	^self boxReturn
