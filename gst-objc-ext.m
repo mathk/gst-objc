@@ -129,158 +129,192 @@ gst_FFITypeForObjCType(const char *typestr)
 	return NULL;
 }
 
-void gst_unboxValue(long long value, void *dest, const char *objctype)
+void 
+gst_boxValue (void* value, OOP* dest, const char *objctype)
 {
-  gst_SkipQualifiers(&objctype);
-  
+  gst_SkipQualifiers (&objctype);
+  unsigned short tmpUS;
+  unsigned int tmpUI;
+  id object;
+
   switch(*objctype)
     {
     case 'c':
-      *(char*)dest = (char)value;
-      break;
     case 'C':
-      *(unsigned char*)dest = (unsigned char)value;
+      *dest = gst_proxy->charToOOP (*(char*)value);
       break;
     case 's':
-      *(short*)dest = (short)value;
+      *dest = gst_proxy->intToOOP (*(short*)value);
       break;
     case 'S':
-      *(unsigned short*)dest = (unsigned short)value;
+      tmpUS = *(unsigned short*)value;
+      *dest = gst_proxy->intToOOP (tmpUS);
       break;
     case 'i':
-      *(int*)dest = (int)value;
+      *dest = gst_proxy->intToOOP (*(int*)value);
       break;
     case 'I':
-      *(unsigned int*)dest = (unsigned int)value;
+      tmpUI = *(unsigned int*)value;
+      *dest = gst_proxy->intToOOP (tmpUI);
       break;
-    case 'l':
-      *(long*)dest = (long)value;
-      break;
+    case 'l': /*Fix me, unsigned long is not correct */
     case 'L':
-      *(unsigned long*)dest = (unsigned long)value;
+      *dest = gst_proxy->intToOOP (*(long*)value);
       break;
+      /* Not supported for the time being
     case 'q':
-      *(long long*)dest = (long long)value;
+      *(long long*)dest = gst_proxy->OOPToChar (value)(long long)value;
       break;
     case 'Q':
-      *(unsigned long long*)dest = (unsigned long long)value;
+      *(unsigned long long*)dest = gst_proxy->OOPToChar (value)(unsigned long long)value;
       break;
+      */
     case 'f':
-      *(float*)dest = (float)value;
+      *dest = gst_proxy->floatToOOP (*(float*)value);
       break;
     case 'd':
-      *(double*)dest = (double)value;
+      *dest = gst_proxy->floatToOOP (*(double*)value);
       break;
     case 'B':
-      *(BOOL*)dest = (BOOL)value;
+      *dest = gst_proxy->boolToOOP (*(BOOL*)value);
       break;
     case ':':
-      *(SEL*)dest = (SEL)value;
+      *dest = (SEL) gst_proxy->cObjectToOOP (*(SEL*)value);
       break;
-    case '(':
+    /*case '(': TODO */
     case '^':
     case '#':
     case '@':
-      *(id*)dest = value;
+      object = *(id*)value;
+      if ([object class] == NSClassFromString ("StProxy"))
+	{
+	  *dest = [object getStObject];
+	}
+      else
+	{
+	  *dest = gst_proxy->cObjectToOOP (object);
+	}
       return;
     case 'v':
-      *(id*)dest = NULL;
+      *dest = NULL;
       return;
     case '*':
-      *(char**)dest = (char*)value;
+      *dest = gst_proxy->stringToOOP (*(char**)value);;
       return;
     case '{':
       {
-	if (0 == strncmp(objctype, "{_NSRect", 8))
-	  {
-	    *(NSRect*)dest = *((NSRect*)value);
-	    break;
-	  }
-	else if (0 == strncmp(objctype, "{_NSRange", 9))
-	  {
-	    *(NSRange*)dest = *((NSRange*)value);
-	    break;
-	  }
-	else if (0 == strncmp(objctype, "{_NSPoint", 9))
-	  {
-	    *(NSPoint*)dest = *((NSPoint*)value);
-	    break;
-	  }
-	else if (0 == strncmp(objctype, "{_NSSize", 8))
-	  {
-	    *(NSSize*)dest = *((NSSize*)value);
-	    break;
-	  }
+	*dest = gst_proxy->cObjectToOOP (value);
       }
     default:
-      [NSException raise: @"Send" 
+      [NSException raise: @"Box" 
 		  format: @"Unable to transmogriy object to"
 	  "compound type: %s\n", objctype];
     }
 }
 
-/*ObjcType gst_boxValue(void *value, const char *typestr)
+void 
+gst_unboxValue (OOP value, void *dest, const char *objctype)
 {
-  gst_SkipQualifiers(&typestr);
-  ObjcType ret;
-
-  switch(*typestr)
+  gst_SkipQualifiers (&objctype);
+  
+  switch(*objctype)
     {
-    case 'B':
     case 'c':
+      *(char*)dest = gst_proxy->OOPToChar (value);
+      break;
     case 'C':
+      *(unsigned char*)dest = (unsigned char) gst_proxy->OOPToChar (value);
+      break;
     case 's':
+      *(short*)dest = (short) gst_proxy->OOPToInt (value);
+      break;
     case 'S':
+      *(unsigned short*)dest = (unsigned short) gst_proxy->OOPToInt (value);
+      break;
     case 'i':
+      *(int*)dest = (int) gst_proxy->OOPToInt (value);
+      break;
     case 'I':
+      *(unsigned int*)dest = (unsigned int) gst_proxy->OOPToInt (value);
+      break;
     case 'l':
+      *(long*)dest = (long) gst_proxy->OOPToInt (value);
+      break;
     case 'L':
-    case 'q': 
+      *(unsigned long*)dest = (unsigned long) gst_proxy->OOPToInt (value);
+      break;
+      /* Not supported for the time being
+    case 'q':
+      *(long long*)dest = gst_proxy->OOPToChar (value)(long long)value;
+      break;
     case 'Q':
-    case 'f': 
+      *(unsigned long long*)dest = gst_proxy->OOPToChar (value)(unsigned long long)value;
+      break;
+      */
+    case 'f':
+      *(float*)dest = (float) gst_proxy->OOPToFloat (value);
+      break;
     case 'd':
-    case ':': 
-    case '@':
-    case '#':
-    case '(': //FIXME: Hack
+      *(double*)dest = gst_proxy->OOPToFloat (value);
+      break;
+    case 'B':
+      *(BOOL*)dest = (BOOL) gst_proxy->OOPToBool (value);
+      break;
+    case ':':
+      *(SEL*)dest = (SEL) gst_proxy->OOPToCObject (value);
+      break;
+    /*case '(': TODO */
     case '^':
-      return *(ObjcType*)value;
+    case '#':
+    case '@':
+      if (gst_proxy->objectIsKindOf (value, gst_proxy->cObjectClass))
+	{
+	  *(id*)dest = (id) gst_proxy->OOPToCObject (value);
+	}
+      else
+	{
+	  *(id*)dest = [StProxy allocWith: value];
+	}
+      return;
+    case 'v':
+      *(id*)dest = NULL;
+      return;
+    case '*':
+      *(char**)dest = gst_proxy->OOPToString (value);;
+      return;
     case '{':
       {
-	if (0 == strncmp(typestr, "{_NSRect", 8))
+	if (0 == strncmp(objctype, "{_NSRect", 8))
 	  {
-	    ret.idType = [NSValue valueWithRect: *(NSRect*)value];
-	    return ret;
-	  } 
-	else if (0 == strncmp(typestr, "{_NSRange", 9))
-	  {
-	    ret.idType = [NSValue valueWithRange: *(NSRange*)value];
-	    return ret;
+	    NSRect* v = (NSRect*) gst_proxy->OOPToCObject (value);
+	    *(NSRect*)dest = *v;
+	    break;
 	  }
-	else if (0 == strncmp(typestr, "{_NSPoint", 9))
+	else if (0 == strncmp(objctype, "{_NSRange", 9))
 	  {
-	    ret.idType =  [NSValue valueWithPoint: *(NSPoint*)value];
-	    return ret;
+	    NSRange* v = (NSRange*) gst_proxy->OOPToCObject (value);
+	    *(NSRange*)dest = *v;
+	    break;
 	  }
-	else if (0 == strncmp(typestr, "{_NSSize", 8))
+	else if (0 == strncmp(objctype, "{_NSPoint", 9))
 	  {
-	    ret.idType = [NSValue valueWithSize: *(NSSize*)value];
-	      return ret;
+	    NSPoint* v = (NSPoint*) gst_proxy->OOPToCObject (value);
+	    *(NSPoint*)dest = *v;
+	    break;
 	  }
-	[NSException raise: @"Send" 
-		    format: @"Boxing arbitrary structures doesn't work yet."];
+	else if (0 == strncmp(objctype, "{_NSSize", 8))
+	  {
+	    NSSize* v = (NSSize*) gst_proxy->OOPToCObject (value);
+	    *(NSSize*)dest = *v;
+	    break;
+	  }
       }
-      // Map void returns to nil
-    case 'v':
-      return (ObjcType)nil;
-      // Other types, just wrap them up in an NSValue
     default:
-      NSLog(@"Warning: using +[NSValue valueWithBytes:objCType:]");
-      ret.idType = [NSValue valueWithBytes: value objCType: typestr];
-      return ret;
+      [NSException raise: @"Unbox" 
+		  format: @"Unable to transmogriy object to"
+	  "compound type: %s\n", objctype];
     }
-    }
-*/
+}
 
 /* Return the length in byte of 
    the return object for a message send */
@@ -300,12 +334,12 @@ gst_sendMessageReturnType (id receiver, SEL selector)
 
 /* Perform a Objective-C message send */
 void
-gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass, char* result)
+gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass, char* result)
 {
   void *methodIMP;
   if (receiver == nil)
     {
-      return (ObjcType)nil;
+      return;
     }
 
   NSMethodSignature *sig = [receiver methodSignatureForSelector: selector];
@@ -391,10 +425,12 @@ gst_sendMessage(id receiver, SEL selector, int argc, id* args, Class superClass,
   void *unboxedArguments[[sig numberOfArguments]];
   unboxedArguments[0] = &receiver;
   unboxedArguments[1] = &selector;
+  // My be need to register OOP
+  gst_object argsArray = (gst_object)OOP_TO_OBJ (args);
   for (i = 0; i < argc; i++)
     {
       const char *objCType = [sig getArgumentTypeAtIndex: i + 2];
-      gst_unboxValue(args[i], unboxedArgumentsBuffer[i + 2], objCType);
+      gst_unboxValue(ARRAY_OOP_AT(argsArray, i+1), unboxedArgumentsBuffer[i + 2], objCType);
       unboxedArguments[i + 2] = unboxedArgumentsBuffer[i + 2];
     }
 
