@@ -41,11 +41,6 @@ ffi_type ffi_type_nsrange = {
 }
 @end
 
-void
-gst_prepareArguments(OOP args, OOP recipient)
-{
-  
-}
 
 void gst_SkipQualifiers(const char **typestr)
 {

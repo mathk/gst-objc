@@ -1,5 +1,4 @@
 #import "objc-proxy.h"
-#include <gstpub.h>
 
 @implementation StProxy
 
@@ -8,12 +7,12 @@
   return [[self alloc] initWith: stObject];
 }
 
-- (OO) getStObject
+- (OOP) getStObject
 {
   return stObject;
 }
 
-- (StProxy) initWith: (OOP)stObj
+- (StProxy*) initWith: (OOP)stObj
 {
   stObject = stObj;
   return self;
@@ -38,9 +37,11 @@
       [anInvocation getArgument: (void*)argumentBuffer atIndex: i];
       gst_boxValue (argumentBuffer, args+i, [sig getArgumentTypeAtIndex: i]);
     }
-  args[i] = nil;
+  args[i] = NULL;
 
   OOP returnOOP = gst_proxy->vmsgSend (stObject, selector, args);
   gst_unboxValue (returnOOP, (void*)returnBuffer, [sig methodReturnType]);
   [anInvocation setReturnValue: (void*)returnBuffer];
 }
+
+@end

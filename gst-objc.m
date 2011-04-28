@@ -1,5 +1,5 @@
 #include <gstpub.h>
-#include <gst-objc-ext.h>
+#include "gst-objc-ext.h"
 #import <Foundation/Foundation.h>
 //#import "LKInterpreterRuntime.h"
 #ifdef __APPLE__

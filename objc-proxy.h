@@ -1,11 +1,8 @@
 #ifndef OBJC_PROXY_H
 #define OBJC_PROXY_H
 
-#import <Foundation/Foundation.h>
 #include "gst-objc-ext.h"
-#include <gstpub.h>
-
-extern  VMProxy* gst_proxy;
+#import <Foundation/Foundation.h>
 
 @interface StProxy : NSObject {
   OOP stObject;

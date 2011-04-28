@@ -5,7 +5,7 @@
 #import <Cocoa/Cocoa.h>
 #import "objc-proxy.h"
 
-extern  VMProxy* gst_proxy;
+extern VMProxy* gst_proxy;
 
 
 typedef union ObjcType {
