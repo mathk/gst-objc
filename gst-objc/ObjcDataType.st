@@ -86,4 +86,11 @@ CStruct subclass: NSRect [
 
 CStruct subclass: NSRange [
     <declaration: #((#location #uLong)(#length #uLong))>
+    NSRange class >> gcLocation: location length: length [
+	| return |
+	return := self gcNew.
+	return location value: location.
+	return length value: length.
+	^return
+    ]
 ]

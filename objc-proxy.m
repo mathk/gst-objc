@@ -23,7 +23,6 @@ extern VMProxy* gst_proxy;
 
 - (void) forwardInvocation: (NSInvocation*) anInvocation
 {
-  NSLog (@"Sending %s to proxy", sel_getName([anInvocation selector]));
   OOP selector = gst_proxy->symbolToOOP(sel_getName([anInvocation selector]));
   NSMethodSignature* sig = [anInvocation methodSignature];
   if (sig == nil)

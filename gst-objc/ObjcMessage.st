@@ -43,26 +43,26 @@ Object subclass: ObjcMessage [
 	    return
 	].
 
-	unboxRoutine at: $c put: [:array | (array charAt: 1) value].
-	unboxRoutine at: $C put: [:array | (array ucharAt: 1) value].
-	unboxRoutine at: $s put: [:array | (array shortAt: 1) value].
-	unboxRoutine at: $S put: [:array | (array ushortAt: 1) value].
-	unboxRoutine at: $i put: [:array | (array intAt: 1) value].
-	unboxRoutine at: $I put: [:array | (array uintAt: 1) value].
-	unboxRoutine at: $l put: [:array | (array longAt: 1) value].
-	unboxRoutine at: $L put: [:array | (array ulongAt: 1) value].
+	unboxRoutine at: $c put: [:array | array charAt: 1].
+	unboxRoutine at: $C put: [:array | array ucharAt: 1].
+	unboxRoutine at: $s put: [:array | array shortAt: 1].
+	unboxRoutine at: $S put: [:array | array ushortAt: 1].
+	unboxRoutine at: $i put: [:array | array intAt: 1].
+	unboxRoutine at: $I put: [:array | array uintAt: 1].
+	unboxRoutine at: $l put: [:array | array longAt: 1].
+	unboxRoutine at: $L put: [:array | array ulongAt: 1].
 	unboxRoutine at: $q put: [:array | 
 	    Memeory bigEndian 
-                       ifTrue: [ ((array intAt: 1) value * 16r100000000) bitOr: (array uintAt: 5) value ]
-	               ifFalse:[ ((array intAt: 5) value * 16r100000000) bitOr: (array uintAt: 1) value ]].
+                       ifTrue: [ ((array intAt: 1) * 16r100000000) bitOr: (array uintAt: 5) ]
+	               ifFalse:[ ((array intAt: 5) * 16r100000000) bitOr: (array uintAt: 1) ]].
 	unboxRoutine at: $Q put: [:array |
 	    Memeory bigEndian
-                       ifTrue: [ ((array uintAt: 1) value * 16r100000000) + (array uintAt: 5) value ]
-	               ifFalse:[ ((array uintAt: 5) value * 16r100000000) + (array uintAt: 1) value ]].
+                       ifTrue: [ ((array uintAt: 1) * 16r100000000) + (array uintAt: 5) ]
+	               ifFalse:[ ((array uintAt: 5) * 16r100000000) + (array uintAt: 1) ]].
 
-	unboxRoutine at: $f put: [:array | (array floatAt: 1) value].
-	unboxRoutine at: $d put: [:array | (array doubleAt: 1) value].
-	unboxRoutine at: $B put: [:array | (array uintAt: 1) value = 1].
+	unboxRoutine at: $f put: [:array | array floatAt: 1].
+	unboxRoutine at: $d put: [:array | array doubleAt: 1].
+	unboxRoutine at: $B put: [:array | array uintAt: 1].
 	unboxRoutine at: $: put: [:array | ObjcRuntime selGetName: (CObject address: (array longAt: 1))].
 	unboxRoutine at: $v put: [:array | nil ].
     ]
