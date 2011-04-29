@@ -96,7 +96,11 @@ gst_FFITypeForObjCType(const char *typestr)
 			return &ffi_type_pointer;
 		case '{':
 		{
+#ifdef GNU_RUNTIME
 			if (0 == strncmp(typestr, "{_NSRect", 8))
+#else
+			if (0 == strcmp(typestr, @encode(NSRect)))
+#endif
 			{
 				return &ffi_type_nsrect;
 			} 
@@ -104,11 +108,19 @@ gst_FFITypeForObjCType(const char *typestr)
 			{
 				return &ffi_type_nsrange;
 			}
+#ifdef GNU_RUNTIME
 			else if (0 == strncmp(typestr, "{_NSPoint", 9))
+#else
+			else if (0 == strcmp(typestr, @encode(NSPoint)))
+#endif
 			{
 				return &ffi_type_nspoint;
 			}
+#ifdef GNU_RUNTIME
 			else if (0 == strncmp(typestr, "{_NSSize", 8))
+#else
+			else if (0 == strcmp(typestr, @encode(NSSize)))
+#endif
 			{
 				return &ffi_type_nspoint;
 			}
@@ -163,14 +175,15 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
     case 'L':
       *dest = gst_proxy->intToOOP (*(long*)value);
       break;
-      /* Not supported for the time being
+      /* Not supported for i386 the time being */
+#ifdef __x86_64__
     case 'q':
-      *(long long*)dest = gst_proxy->OOPToChar (value)(long long)value;
+      *(long long*)dest = (long long)gst_proxy->intToOOP (*(unsigned long long*)value);
       break;
     case 'Q':
-      *(unsigned long long*)dest = gst_proxy->OOPToChar (value)(unsigned long long)value;
+      *(unsigned long long*)dest = (unsigned long long)gst_proxy->intToOOP (*(unsigned long long*)value);
       break;
-      */
+#endif
     case 'f':
       *dest = gst_proxy->floatToOOP (*(float*)value);
       break;
@@ -245,14 +258,15 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
     case 'L':
       *(unsigned long*)dest = (unsigned long) gst_proxy->OOPToInt (value);
       break;
-      /* Not supported for the time being
+      /* Not supported for i386 the time being */
+#ifdef __x86_64__
     case 'q':
-      *(long long*)dest = gst_proxy->OOPToChar (value)(long long)value;
+      *(long long*)dest = (long long)gst_proxy->OOPToInt (value);
       break;
     case 'Q':
-      *(unsigned long long*)dest = gst_proxy->OOPToChar (value)(unsigned long long)value;
+      *(unsigned long long*)dest = (unsigned long long)gst_proxy->OOPToInt (value);
       break;
-      */
+#endif
     case 'f':
       *(float*)dest = (float) gst_proxy->OOPToFloat (value);
       break;
@@ -271,18 +285,18 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
     case '@':
       objcClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
       if (gst_proxy->objectIsKindOf (value, objcClass))
-	{
-	  objcObject = (gst_objc_object) OOP_TO_OBJ (value);
-	  *(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
-	}
+				{
+					objcObject = (gst_objc_object) OOP_TO_OBJ (value);
+					*(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
+				}
       else if (gst_proxy->objectIsKindOf (value, gst_proxy->cObjectClass))
-	{
-	  *(id*)dest = (id) gst_proxy->OOPToCObject (value);
-	}
+				{
+					*(id*)dest = (id) gst_proxy->OOPToCObject (value);
+				}
       else
-	{
-	  *(id*)dest = [StProxy allocWith: value];
-	}
+				{
+					*(id*)dest = [StProxy allocWith: value];
+				}
       return;
     case 'v':
       *(id*)dest = NULL;
@@ -292,25 +306,41 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
       return;
     case '{':
       {
+#ifdef GNU_RUNTIME
 	if (0 == strncmp(objctype, "{_NSRect", 8))
+#else
+	if (0 == strcmp(objctype, @encode(NSRect)))
+#endif
 	  {
 	    NSRect* v = (NSRect*) gst_proxy->OOPToCObject (value);
 	    *(NSRect*)dest = *v;
 	    break;
 	  }
+#ifdef GNU_RUNTIME
 	else if (0 == strncmp(objctype, "{_NSRange", 9))
+#else
+	else if (0 == strcmp(objctype, @encode(NSRange)))
+#endif
 	  {
 	    NSRange* v = (NSRange*) gst_proxy->OOPToCObject (value);
 	    *(NSRange*)dest = *v;
 	    break;
 	  }
+#ifdef GNU_RUNTIME
 	else if (0 == strncmp(objctype, "{_NSPoint", 9))
+#else
+	else if (0 == strcmp(objctype, @encode(NSPoint)))
+#endif
 	  {
 	    NSPoint* v = (NSPoint*) gst_proxy->OOPToCObject (value);
 	    *(NSPoint*)dest = *v;
 	    break;
 	  }
+#ifdef GNU_RUNTIME
 	else if (0 == strncmp(objctype, "{_NSSize", 8))
+#else
+	else if (0 == strcmp(objctype, @encode(NSSize)))
+#endif
 	  {
 	    NSSize* v = (NSSize*) gst_proxy->OOPToCObject (value);
 	    *(NSSize*)dest = *v;

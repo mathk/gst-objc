@@ -36,9 +36,15 @@ case $host in
 		     AC_MSG_ERROR([gnustep is missing perhaps you need to souce \$GNUSTEP_INSTALL_DIR/System/Library/Makefiles/GNUstep.sh])
 		  fi
 		  OBJCLIBS=`$GNUSTEP_CONFIG --gui-libs`
-     		  GNUSTEP_CFLAGS=`$GNUSTEP_CONFIG --objc-flags` ;;
+     	GNUSTEP_CFLAGS=`$GNUSTEP_CONFIG --objc-flags` ;;
 esac
-OBJCFLAGS+=-no-undefined
+
+case $host in
+		 *i386*) AC_DEFINE([__i386__]) ;;
+		 *x86_64*) AC_DEFINE([__x86_64__]) ;;
+esac
+		 
+CFLAGS+=" -no-undefined"
 AC_SUBST(OBJC, [$CC])
 AC_SUBST(OBJCFLAGS, [$CFLAGS])
 AC_SUBST(GNUSTEP_CFLAGS)

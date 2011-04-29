@@ -3,6 +3,9 @@
 #import <Cocoa/Cocoa.h>
 #import "gst-objc.h"
 #import "objc-proxy.h"
+#ifndef GNU_RUNTIME
+#import <objc/objc-runtime.h>
+#endif
 
 typedef struct gst_objc_object
 {
