@@ -1,4 +1,7 @@
 #import "objc-proxy.h"
+#import "gst-objc-ext.h"
+
+extern VMProxy* gst_proxy;
 
 @implementation StProxy
 

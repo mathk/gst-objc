@@ -38,7 +38,7 @@ case $host in
 		  OBJCLIBS=`$GNUSTEP_CONFIG --gui-libs`
      		  GNUSTEP_CFLAGS=`$GNUSTEP_CONFIG --objc-flags` ;;
 esac
-
+OBJCFLAGS+=-no-undefined
 AC_SUBST(OBJC, [$CC])
 AC_SUBST(OBJCFLAGS, [$CFLAGS])
 AC_SUBST(GNUSTEP_CFLAGS)

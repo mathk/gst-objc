@@ -1,8 +1,7 @@
-#ifndef OBJC_PROXY_H
-#define OBJC_PROXY_H
 
-#include "gst-objc-ext.h"
+#import "gst-objc-ext.h"
 #import <Foundation/Foundation.h>
+
 
 @interface StProxy : NSObject {
   OOP stObject;
@@ -13,4 +12,3 @@
 - (void) forwardInvocation: (NSInvocation*) anInvocation; 
 @end
 
-#endif

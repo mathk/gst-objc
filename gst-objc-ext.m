@@ -1,6 +1,7 @@
 #include <ffi.h>
 #import "gst-objc-ext.h"
-#import "LKObject.h"
+
+//extern VMProxy* gst_proxy;
 
 ffi_type *_ffi_type_nspoint_elements[] = {
 	&ffi_type_float, &ffi_type_float, NULL
@@ -181,7 +182,7 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
     case '#':
     case '@':
       object = *(id*)value;
-      if ([object class] == NSClassFromString ("StProxy"))
+      if ([object class] == NSClassFromString (@"StProxy"))
 	{
 	  *dest = [object getStObject];
 	}
@@ -197,12 +198,11 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
       *dest = gst_proxy->stringToOOP (*(char**)value);;
       return;
     case '{':
-      {
-	*dest = gst_proxy->cObjectToOOP (value);
-      }
+      *dest = gst_proxy->cObjectToOOP (value);
+      return;
     default:
       [NSException raise: @"Box" 
-		  format: @"Unable to transmogriy object to"
+		  format: @"Unable to transmogriy object to "
 	  "compound type: %s\n", objctype];
     }
 }
