@@ -4,13 +4,21 @@
 #import "gst-objc.h"
 #import "objc-proxy.h"
 
+typedef struct gst_objc_object
+{
+  OBJ_HEADER;
+  OOP objcPtr;
+  OOP isClass;
+}
+ *gst_objc_object;
+
 @interface NSView (gs)
 - (NSRect*) gstBounds;
 @end
 
-/* Build a NSString from  a C string */
 void gst_retain(id object);
 void gst_release(id object);
+int gst_sizeofCGFloat();
 NSString* gst_toNSString (char * string);
 int gst_sendMessageReturnSize (id receiver, SEL selector);
 char* gst_sendMessageReturnType (id receiver, SEL selector);

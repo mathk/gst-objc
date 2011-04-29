@@ -42,8 +42,14 @@ ffi_type ffi_type_nsrange = {
 }
 @end
 
+int
+gst_sizeofCGFloat ()
+{
+  return sizeof (CGFloat);
+}
 
-void gst_SkipQualifiers(const char **typestr)
+void 
+gst_SkipQualifiers(const char **typestr)
 {
 	char c = **typestr;
 	while ((c >= '0' && c <= '9') || c == 'r' || c == 'n' || c == 'N' ||
@@ -211,7 +217,8 @@ void
 gst_unboxValue (OOP value, void *dest, const char *objctype)
 {
   gst_SkipQualifiers (&objctype);
-  
+  OOP objcClass;
+  gst_objc_object objcObject;
   switch(*objctype)
     {
     case 'c':
@@ -262,7 +269,13 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
     case '^':
     case '#':
     case '@':
-      if (gst_proxy->objectIsKindOf (value, gst_proxy->cObjectClass))
+      objcClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
+      if (gst_proxy->objectIsKindOf (value, objcClass))
+	{
+	  objcObject = (gst_objc_object) OOP_TO_OBJ (value);
+	  *(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
+	}
+      else if (gst_proxy->objectIsKindOf (value, gst_proxy->cObjectClass))
 	{
 	  *(id*)dest = (id) gst_proxy->OOPToCObject (value);
 	}

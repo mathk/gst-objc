@@ -1,12 +1,12 @@
 <package>
 	<name>Objc</name>
 	<namespace>Objc</namespace>
-	<module>libgstobjc</module>	
+	<module>libgstobjc</module>
 
+	<filein>ObjcDataType.st</filein>	
 	<filein>ObjcRuntime.st</filein>
 	<filein>ObjcMessage.st</filein>
 	<filein>ObjcObject.st</filein>
-	<filein>ObjcDataType.st</filein>
 	<filein>ObjcAppKit.st</filein>
 	<filein>ObjcClass.st</filein>
 </package>

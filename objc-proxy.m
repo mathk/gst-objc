@@ -23,6 +23,11 @@ extern VMProxy* gst_proxy;
 
 - (void) forwardInvocation: (NSInvocation*) anInvocation
 {
+  NSLog (@"Sending %s to proxy", sel_getName([anInvocation selector]));
+  if (0 == strcmp("_frameExtend", sel_getName([anInvocation selector])))
+    {
+      asm("int3");
+    }
   OOP selector = gst_proxy->symbolToOOP(sel_getName([anInvocation selector]));
   NSMethodSignature* sig = [anInvocation methodSignature];
   if (sig == nil)
@@ -35,10 +40,10 @@ extern VMProxy* gst_proxy;
   char argumentBuffer[[sig frameLength]];
   char returnBuffer[[sig frameLength]];
   int i;
-  for (i = 0; i < [sig numberOfArguments]; i++)
+  for (i = 0; i < [sig numberOfArguments]-2; i++)
     {
-      [anInvocation getArgument: (void*)argumentBuffer atIndex: i];
-      gst_boxValue (argumentBuffer, args+i, [sig getArgumentTypeAtIndex: i]);
+      [anInvocation getArgument: (void*)argumentBuffer atIndex: i+2];
+      gst_boxValue (argumentBuffer, args+i, [sig getArgumentTypeAtIndex: i+2]);
     }
   args[i] = NULL;
 

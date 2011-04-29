@@ -19,7 +19,27 @@ Object subclass: ObjcMessage [
 	unboxRoutine at: $# put: [:array | ObjcClass fromPtr: (CObject address: (array longAt: 1))].
 
 	"unboxRoutine at: '(' put: [todo]."
-	"unboxRoutine at: '{' put: [todo]."
+	unboxRoutine at: '{' put: [:array :type | 
+	    ('(_NSRect*' match: type) ifTrue: [
+		^NSRect gcOriginX: (array type: CCGFloat type at: 1) 
+		    y: (array type: CCGFloat type at: 2)
+		    width: (array type: CCGFloat type at: 3)
+		    height: (array type: CCGFloat type at: 4)].
+
+	    ('{_NSPoint*' match: type)  ifTrue: [
+		^NSPoint gcX: (array type: CCGFloat type at: 1)
+			 x: (array type: CCGFloat type at: 2)].
+
+	    ('{_NSSize*' match: type)  ifTrue: [
+		^NSPoint gcWidth: (array type: CCGFloat type at: 1) 
+			 height: (array type: CCGFloat type at: 2) ].
+
+	    ('{_NSRange*' match: type)  ifTrue: [
+		^NSRange gcLocation: (array ulong: 1) 
+			 length: (array ulong: 2)].
+
+	    self error: 'Type ', type, ' not suported' 
+	].
 
 	unboxRoutine at: $c put: [:array | (array charAt: 1) value].
 	unboxRoutine at: $C put: [:array | (array ucharAt: 1) value].
@@ -70,7 +90,7 @@ Object subclass: ObjcMessage [
 	ObjcRuntime objcMsgSend: receiver
 	    sel: selector
 	    argc: args size
-	    argv: (args collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each]])
+	    argv: args
 	    super: nil
 	    returning: returnHolder. 
 	^self boxReturn
