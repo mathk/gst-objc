@@ -9,7 +9,7 @@ void
 gst_initModule (VMProxy * proxy)
 {
   gst_proxy = proxy;
-#ifndef GNU_TUNTIME
+#ifndef GNU_RUNTIME
   proxy->dlOpen ("libobjc", false);
   proxy->dlOpen ("Cocoa.framework/Cocoa", false);
 #else // __APPLE__
