@@ -2,10 +2,15 @@
 #import "gst-objc-ext.h"
 
 //extern VMProxy* gst_proxy;
-
+#ifdef __i386__
 ffi_type *_ffi_type_nspoint_elements[] = {
 	&ffi_type_float, &ffi_type_float, NULL
 };
+#else
+ffi_type *_ffi_type_nspoint_elements[] = {
+	&ffi_type_double, &ffi_type_double, NULL
+};
+#endif
 ffi_type ffi_type_nspoint = {
 	0, 0, FFI_TYPE_STRUCT, _ffi_type_nspoint_elements
 };
@@ -531,7 +536,7 @@ gst_addMethod(char * selector, Class cls, char * typeStr)
   ffi_prep_closure_loc (&closure->closure, &cif, gst_closureTrampolineMethod, closure, code);
   
   BOOL result = class_addMethod (cls, sel_getUid (selector), (IMP)code, typeStr);
-  if (!result)
+  if (NO == result)
     {
       [NSException raise: @"Closure"
 		  format: @"Fail adding method %s", selector];

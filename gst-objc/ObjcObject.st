@@ -25,7 +25,10 @@ Object subclass: ObjcObject [
 	objcClass stClass: self.
 	objcClass addIvar: 'stObject' type: CPtr.
 	objcClass register.
-	self registerHandler: [:method :message | self addObjcMethod: method selector type: message argument. nil] forPragma: #objcTypeStr:
+	self registerHandler: [:method :message | 
+	    self addObjcMethod: method selector type: message argument.
+	    'Method register' printNl.
+	    nil] forPragma: #objcTypeStr:
 	    
     ]
 
@@ -33,6 +36,12 @@ Object subclass: ObjcObject [
 	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
 	^objcClass alloc
     ]
+
+    ObjcObject class >> noRetainAlloc [
+	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
+	^objcClass noRetainAlloc
+    ]
+
 
     ObjcObject class >> addObjcMethod: selector type: typeStr [
 	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
