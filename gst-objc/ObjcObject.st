@@ -2,6 +2,10 @@ Object subclass: ObjcObject [
 
     | objcPtr isClass |
 
+    ObjcObject class [
+	| objcClass |
+    ]
+		
     ObjcObject class >> fromPtr: aCObject [
 	<category: 'private'>
 	^(self new)
@@ -12,14 +16,40 @@ Object subclass: ObjcObject [
     ObjcObject class >> basicFromPtr: aCObject [
 	<category: 'private'>
 	^(self new)
-	   basicObjcPtr: aCObject;
+	    basicObjcPtr: aCObject;
 	    yourself
+    ]
+
+    ObjcObject class >> objcSubclass: aString [
+	objcClass := ObjcRuntime objcAllocateClassPairSuper: aString name: self name indexable: 0.
+	objcClass stClass: self.
+	objcClass addIvar: 'stObject' type: CPtr.
+	objcClass register.
+	self registerHandler: [:method :message | self addObjcMethod: method selector type: message argument. nil] forPragma: #objcTypeStr:
+	    
+    ]
+
+    ObjcObject class >> alloc [
+	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
+	^objcClass alloc
+    ]
+
+    ObjcObject class >> addObjcMethod: selector type: typeStr [
+	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
+    ]
+
+    ObjcObject class >> primAddObjcMethod: selector in: class type: typeStr [
+	<cCall: 'objc_addMethod' returning: #void args: #(#symbol #cObject #string)>
+    ]
+
+    ObjcObject class >> addSelector: sel withMethod: cm [
+	super addSelector: sel withMethod: cm
     ]
 
     doesNotUnderstand: aMessage [
 	^self send: aMessage selector with: aMessage arguments
     ]
-
+    
     privObjcClass [
 	^ObjcRuntime objectGetClass: self objcPtr
     ]
@@ -31,26 +61,6 @@ Object subclass: ObjcObject [
     isClass [
 	^false
     ]
-
- "   send: selector with: arguments [
-	self sendGNU: selector with: arguments
-    ]"
-
-  "  sendApple: selector with: arguments [
-	| objcSel return |
-	objcSel := ObjcRuntime selRegisterName: selector.
-	return := ObjcRuntime 
-	    objcMsgSend: objcPtr 
-	    selector: objcSel 
-	    args: (arguments collect: [:each | each isObjc ifTrue: [each objcPtr] ifFalse: [each] ]).
-	^return = objcPtr
-            ifFalse: [self class basicFromPtr: return]
-	    ifTrue: [self]
-    ]
-
-    prepareArgument: array into: recipient [
-	<cCall: 'objc_prepareArguments' returning: #cObject args: #(#smalltalk #smalltalk)>
-    ]"
 
     send: selector with: arguments [
 	| message |

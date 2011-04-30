@@ -28,6 +28,13 @@ ffi_type ffi_type_nsrange = {
 	0, 0, FFI_TYPE_STRUCT, _ffi_type_nsrange_elements
 };
 
+typedef struct objc_ffi_closure {
+  ffi_closure closure;
+  NSMethodSignature* sig;
+}
+  objc_ffi_closure;
+
+
 @implementation NSView (gst)
 - (NSRect *) gstBounds
 {
@@ -476,6 +483,59 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
   ffi_call(&cif, methodIMP, result, unboxedArguments);
   
   //return gst_boxValue(msgSendRet, [sig methodReturnType]);
+}
+
+void
+gst_closureTrampolineMethod(ffi_cif* cif, void* result, void** args, void* userdata)
+{
+  objc_ffi_closure* closure = userdata;
+  NSMethodSignature* sig = closure->sig;
+  OOP argsOOP[[sig numberOfArguments]];
+  OOP selector = gst_proxy->symbolToOOP(sel_getName(args[1]));
+  OOP resultOOP;
+  OOP *receiver;
+  int i;
+
+  object_getInstanceVariable (args[0], "stObject", (void**)&receiver);
+  for (i = 0; i < [sig numberOfArguments]-2; i++)
+    {
+      gst_boxValue (args[i+2], argsOOP+i, [sig getArgumentTypeAtIndex: i+2]);
+    }
+  resultOOP = gst_proxy->vmsgSend (*receiver, selector, argsOOP);
+  gst_unboxValue (resultOOP, result, [sig methodReturnType]);
+
+}
+
+void
+gst_addMethod(char * selector, Class cls, char * typeStr)
+{
+  objc_ffi_closure* closure;
+  void* code;
+  ffi_cif cif;
+  int i;
+  NSMethodSignature* sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
+  int argc = [sig numberOfArguments];
+  ffi_type* ffi_ret_type = gst_FFITypeForObjCType([sig methodReturnType]);
+  ffi_type* ffi_types[argc];
+  
+  [sig retain];
+  
+  for (i = 0; i < argc; i++)
+    {
+      const char *objCType = [sig getArgumentTypeAtIndex: i];
+      ffi_types[i] = gst_FFITypeForObjCType(objCType);
+    }
+
+  closure = (objc_ffi_closure*)ffi_closure_alloc (sizeof (objc_ffi_closure), &code);
+  ffi_prep_cif (&cif, FFI_DEFAULT_ABI, argc, ffi_ret_type, ffi_types);
+  ffi_prep_closure_loc (&closure->closure, &cif, gst_closureTrampolineMethod, closure, code);
+  
+  BOOL result = class_addMethod (cls, sel_getUid (selector), (IMP)code, typeStr);
+  if (!result)
+    {
+      [NSException raise: @"Closure"
+		  format: @"Fail adding method %s", selector];
+    }
 }
 
 void

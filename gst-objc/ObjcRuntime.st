@@ -101,8 +101,16 @@ Object subclass: ObjcRuntime [
 	    ^ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
 	]
 
-	primClassAddMethod: class sel: selector body: ccallback type: typeStr [
-	    <cCall: 'class_addMethod' returning: #void args: #( #cObject #cObject #cObject #string )>
+	classAddIvar: class name: names type: type [
+	    self primClassAddIvar: class objcPtr 
+		 name: name 
+		 size: type sizeof
+		 alignment: (Character value: type alignof)
+		 type: type objcTypeStr
+	]
+
+	primClassAddIvar: class name: name size: size alignment: align type: typstr [
+	    <cCall: 'class_addIvar' returning: #uint args: #(#cObject #string #uInt #uchar #string)>
 	]
 	
 	classAddMethod: class sel: selector body: block type: typeStr [
@@ -132,4 +140,14 @@ Object subclass: ObjcRuntime [
 	]
     ]
 
+]
+
+CPtr extend [
+    CPtr class >> objcTypeStr [
+	^'^{gst_object=ll}'
+    ]
+
+    objcTypeStr [
+	^'^{gst_object=ll}'
+    ]
 ]

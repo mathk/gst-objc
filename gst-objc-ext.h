@@ -25,6 +25,7 @@ int gst_sizeofCGFloat();
 NSString* gst_toNSString (char * string);
 int gst_sendMessageReturnSize (id receiver, SEL selector);
 char* gst_sendMessageReturnType (id receiver, SEL selector);
+void gst_addMethod(char * selector, Class cls, char * typeStr);
 void gst_boxValue (void* value, OOP* dest, const char *objctype);
 void gst_unboxValue (OOP value, void* dest, const char *objctype);
 void gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass, char* result);
