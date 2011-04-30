@@ -498,15 +498,18 @@ gst_closureTrampolineMethod(ffi_cif* cif, void* result, void** args, void* userd
   OOP argsOOP[[sig numberOfArguments]];
   OOP selector = gst_proxy->symbolToOOP(sel_getName(args[1]));
   OOP resultOOP;
-  OOP *receiver;
+  OOP receiver;
   int i;
 
-  object_getInstanceVariable (args[0], "stObject", (void**)&receiver);
+
+  Ivar var = class_getInstanceVariable([args[0] class], "stObject");
+  receiver = (OOP)object_getIvar(args[0], var);
+
   for (i = 0; i < [sig numberOfArguments]-2; i++)
     {
       gst_boxValue (args[i+2], argsOOP+i, [sig getArgumentTypeAtIndex: i+2]);
     }
-  resultOOP = gst_proxy->vmsgSend (*receiver, selector, argsOOP);
+  resultOOP = gst_proxy->vmsgSend (receiver, selector, argsOOP);
   gst_unboxValue (resultOOP, result, [sig methodReturnType]);
 
 }
