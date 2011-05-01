@@ -511,7 +511,7 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
   receiver = (OOP)object_getIvar(objcReceiver, var);
 #else
   ptrdiff_t diff = ivar_getOffset(var);
-  receiver = *(OOP*)((ptrdiff_t)receiver+diff);
+  receiver = *(OOP*)((ptrdiff_t)objcReceiver+diff);
 #endif
 
   for (i = 0; i < [sig numberOfArguments]-2; i++)
