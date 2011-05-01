@@ -44,7 +44,7 @@ case $host in
 		 *x86_64*) AC_DEFINE([__x86_64__]) ;;
 esac
 		 
-CFLAGS+=" -no-undefined"
+LDFLAGS+=" -no-undefined"
 AC_SUBST(OBJC, [$CC])
 AC_SUBST(OBJCFLAGS, [$CFLAGS])
 AC_SUBST(GNUSTEP_CFLAGS)
