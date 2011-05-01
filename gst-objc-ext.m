@@ -36,6 +36,9 @@ ffi_type ffi_type_nsrange = {
 typedef struct objc_ffi_closure {
   ffi_closure closure;
   NSMethodSignature* sig;
+  ffi_cif cif;
+  ffi_type *return_type;
+  ffi_type *arg_types[1];
 }
   objc_ffi_closure;
 
@@ -490,8 +493,8 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
   //return gst_boxValue(msgSendRet, [sig methodReturnType]);
 }
 
-void
-gst_closureTrampolineMethod(ffi_cif* cif, void* result, void** args, void* userdata)
+static void
+gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* userdata)
 {
   objc_ffi_closure* closure = userdata;
   NSMethodSignature* sig = closure->sig;
@@ -500,10 +503,11 @@ gst_closureTrampolineMethod(ffi_cif* cif, void* result, void** args, void* userd
   OOP resultOOP;
   OOP receiver;
   int i;
+  id objcReceiver = *((id*)args[0]);
 
 
-  Ivar var = class_getInstanceVariable([args[0] class], "stObject");
-  receiver = (OOP)object_getIvar(args[0], var);
+  Ivar var = class_getInstanceVariable([objcReceiver class], "stObject");
+  receiver = (OOP)object_getIvar(objcReceiver, var);
 
   for (i = 0; i < [sig numberOfArguments]-2; i++)
     {
@@ -519,24 +523,23 @@ gst_addMethod(char * selector, Class cls, char * typeStr)
 {
   objc_ffi_closure* closure;
   void* code;
-  ffi_cif cif;
   int i;
   NSMethodSignature* sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
   int argc = [sig numberOfArguments];
-  ffi_type* ffi_ret_type = gst_FFITypeForObjCType([sig methodReturnType]);
-  ffi_type* ffi_types[argc];
   
   [sig retain];
-  
+  closure = (objc_ffi_closure*)ffi_closure_alloc (sizeof (objc_ffi_closure)  + sizeof(ffi_type *) * (argc - 1), &code);
   for (i = 0; i < argc; i++)
     {
       const char *objCType = [sig getArgumentTypeAtIndex: i];
-      ffi_types[i] = gst_FFITypeForObjCType(objCType);
+      closure->arg_types[i] = gst_FFITypeForObjCType(objCType);
     }
 
-  closure = (objc_ffi_closure*)ffi_closure_alloc (sizeof (objc_ffi_closure), &code);
-  ffi_prep_cif (&cif, FFI_DEFAULT_ABI, argc, ffi_ret_type, ffi_types);
-  ffi_prep_closure_loc (&closure->closure, &cif, gst_closureTrampolineMethod, closure, code);
+  
+  closure->return_type = gst_FFITypeForObjCType([sig methodReturnType]);
+  closure->sig = sig;
+  ffi_prep_cif (&closure->cif, FFI_DEFAULT_ABI, argc, closure->return_type, closure->arg_types);
+  ffi_prep_closure_loc (&closure->closure, &closure->cif, gst_closureTrampolineMethod, closure, code);
   
   BOOL result = class_addMethod (cls, sel_getUid (selector), (IMP)code, typeStr);
   if (NO == result)
@@ -578,4 +581,10 @@ gst_rectFill (NSRect * rect)
   NSRectFill (NSMakeRect (rect->origin.x, rect->origin.y, rect->size.width, rect->size.height));
 }
 
+void
+gst_setIvarOOP(id receiver, const char * name, OOP value)
+{
+  Ivar var = class_getInstanceVariable ([receiver class], name);
+  object_setIvar (receiver, var, value);
+}
 

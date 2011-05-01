@@ -22,6 +22,7 @@ typedef struct gst_objc_object
 void gst_retain(id object);
 void gst_release(id object);
 int gst_sizeofCGFloat();
+void gst_setIvarOOP(id receiver, const char * name, OOP value);
 NSString* gst_toNSString (char * string);
 int gst_sendMessageReturnSize (id receiver, SEL selector);
 char* gst_sendMessageReturnType (id receiver, SEL selector);

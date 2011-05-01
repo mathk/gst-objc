@@ -33,15 +33,20 @@ Object subclass: ObjcObject [
     ]
 
     ObjcObject class >> alloc [
+	| return |
 	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
-	^objcClass alloc
+	return := objcClass alloc.
+	return setIvar: 'stObject' value: return.
+	^return
     ]
 
     ObjcObject class >> noRetainAlloc [
+	| return |
 	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
-	^objcClass noRetainAlloc
+	return := objcClass noRetainAlloc.
+	return setIvar: 'stObject' value: return.
+	^return
     ]
-
 
     ObjcObject class >> addObjcMethod: selector type: typeStr [
 	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
@@ -61,6 +66,14 @@ Object subclass: ObjcObject [
     
     privObjcClass [
 	^ObjcRuntime objectGetClass: self objcPtr
+    ]
+
+    setIvar: name value: value [
+	self primSetIvarTo: self objcPtr name: name value: value
+    ]
+
+    primSetIvarTo: receiver name: name value: value [
+	<cCall: 'objc_setIvarOOP' returning: #void args: #(#cObject #string #smalltalk)>
     ]
 
     isObjc [
