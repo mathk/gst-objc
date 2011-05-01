@@ -507,7 +507,12 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
 
 
   Ivar var = class_getInstanceVariable([objcReceiver class], "stObject");
+#ifndef GNU_RUNTIME
   receiver = (OOP)object_getIvar(objcReceiver, var);
+#else
+  ptrdiff_t diff = ivar_getOffset(var);
+  receiver = *(OOP*)((ptrdiff_t)receiver+diff);
+#endif
 
   for (i = 0; i < [sig numberOfArguments]-2; i++)
     {
@@ -586,6 +591,11 @@ void
 gst_setIvarOOP(id receiver, const char * name, OOP value)
 {
   Ivar var = class_getInstanceVariable ([receiver class], name);
-  object_setIvar (receiver, var, value);
+#ifndef GNU_RUNTIME
+  object_setIvar (receiver, var, (id)value);
+#else
+  ptrdiff_t diff = ivar_getOffset(var);
+  *(OOP*)((ptrdiff_t)receiver+diff) = value;
+#endif
 }
 
