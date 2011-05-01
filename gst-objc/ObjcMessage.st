@@ -23,10 +23,10 @@ Object subclass: ObjcMessage [
 	    | return |
 	    return := nil.
 	    (('{_NSRect*' match: type) or: ['{CGRect*' match: type]) ifTrue: [
-		return := NSRect gcOriginX: (array type: CCGFloat type at: 1) 
-		    y: (array type: CCGFloat type at: 2)
-		    width: (array type: CCGFloat type at: 3)
-		    height: (array type: CCGFloat type at: 4)].
+		return := NSRect gcOriginX: (array type: CCGFloat type valueType at: 1) 
+		    y: (array type: CCGFloat type valueType at: CCGFloat sizeof+1)
+		    width: (array type: CCGFloat type valueType at: (CCGFloat sizeof*2)+1)
+		    height: (array type: CCGFloat type valueType at: (CCGFloat sizeof*3)+1)].
 
 	    ('{_NSPoint*' match: type)  ifTrue: [
 		return := NSPoint gcX: (array type: CCGFloat type at: 1)
