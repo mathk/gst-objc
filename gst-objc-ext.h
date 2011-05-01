@@ -24,6 +24,7 @@ void gst_release(id object);
 int gst_sizeofCGFloat();
 void gst_setIvarOOP(id receiver, const char * name, OOP value);
 NSString* gst_toNSString (char * string);
+void gst_rectFill (NSRect * rect);
 int gst_sendMessageReturnSize (id receiver, SEL selector);
 char* gst_sendMessageReturnType (id receiver, SEL selector);
 void gst_addMethod(char * selector, Class cls, char * typeStr);

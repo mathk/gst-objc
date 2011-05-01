@@ -498,8 +498,8 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
 {
   objc_ffi_closure* closure = userdata;
   NSMethodSignature* sig = closure->sig;
-  OOP argsOOP[[sig numberOfArguments]];
-  OOP selector = gst_proxy->symbolToOOP(sel_getName(args[1]));
+  OOP argsOOP[[sig numberOfArguments]+1];
+  OOP selector = gst_proxy->symbolToOOP(sel_getName(*((SEL*)args[1])));
   OOP resultOOP;
   OOP receiver;
   int i;
@@ -513,6 +513,7 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
     {
       gst_boxValue (args[i+2], argsOOP+i, [sig getArgumentTypeAtIndex: i+2]);
     }
+  argsOOP[i] = NULL;
   resultOOP = gst_proxy->vmsgSend (receiver, selector, argsOOP);
   gst_unboxValue (resultOOP, result, [sig methodReturnType]);
 

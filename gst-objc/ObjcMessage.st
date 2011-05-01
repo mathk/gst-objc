@@ -22,7 +22,7 @@ Object subclass: ObjcMessage [
 	unboxRoutine at: ${ put: [:array :type | 
 	    | return |
 	    return := nil.
-	    ('{_NSRect*' match: type) ifTrue: [
+	    (('{_NSRect*' match: type) or: ['{CGRect*' match: type]) ifTrue: [
 		return := NSRect gcOriginX: (array type: CCGFloat type at: 1) 
 		    y: (array type: CCGFloat type at: 2)
 		    width: (array type: CCGFloat type at: 3)

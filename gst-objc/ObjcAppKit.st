@@ -13,7 +13,7 @@ Object subclass: ObjcAppKit [
 	nsBackingStoreNonretained [ ^1 ]
 	nsBackingStoreBuffered [ ^2 ]
 	nsRectFill: aRect [
-	    <cCall: 'gstRectFill' returning: #void args: #( #cObject )>
+	    <cCall: 'gstRectFill' returning: #void args: #( #{NSRect} )>
 	]
     ]
 ]

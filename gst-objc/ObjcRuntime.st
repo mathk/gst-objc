@@ -101,7 +101,7 @@ Object subclass: ObjcRuntime [
 	    ^ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
 	]
 
-	classAddIvar: class name: names type: type [
+	classAddIvar: class name: name type: type [
 	    self primClassAddIvar: class objcPtr 
 		 name: name 
 		 size: type sizeof

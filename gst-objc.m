@@ -24,6 +24,7 @@ gst_initModule (VMProxy * proxy)
   proxy->defineCFunc ("objc_addMethod", gst_addMethod);
   proxy->defineCFunc ("objc_retain", gst_retain);
   proxy->defineCFunc ("objc_release", gst_release);
+  proxy->defineCFunc ("gstRectFill", gst_rectFill);
   pool = [[NSAutoreleasePool alloc] init];
   NSLog (@"Load complete");
 }
