@@ -27,7 +27,6 @@ Object subclass: ObjcObject [
 	objcClass register.
 	self registerHandler: [:method :message | 
 	    self addObjcMethod: method selector type: message argument.
-	    'Method register' printNl.
 	    nil] forPragma: #objcTypeStr:
 	    
     ]
