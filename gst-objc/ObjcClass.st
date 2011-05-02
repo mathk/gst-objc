@@ -1,9 +1,5 @@
 ObjcObject subclass: ObjcClass [
     | stClass |
-    ObjcClass class >> fromPtr: aCObject [
-	<category: 'private'>
-	^self basicFromPtr: aCObject
-    ]
     
     isClass [
 	^true
@@ -23,10 +19,6 @@ ObjcObject subclass: ObjcClass [
     alloc [
 	^self stClass fromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0).
 
-    ]
-
-    noRetainAlloc [
-	^self stClass basicFromPtr: (ObjcRuntime classCreateInstance: objcPtr size: 0).
     ]
 
     addIvar: name type: type [

@@ -13,13 +13,6 @@ Object subclass: ObjcObject [
 	    yourself
     ]
 
-    ObjcObject class >> basicFromPtr: aCObject [
-	<category: 'private'>
-	^(self new)
-	    basicObjcPtr: aCObject;
-	    yourself
-    ]
-
     ObjcObject class >> objcSubclass: aString [
 	objcClass := ObjcRuntime objcAllocateClassPairSuper: aString name: self name indexable: 0.
 	objcClass stClass: self.
@@ -35,14 +28,6 @@ Object subclass: ObjcObject [
 	| return |
 	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
 	return := objcClass alloc.
-	return setIvar: 'stObject' value: return.
-	^return
-    ]
-
-    ObjcObject class >> noRetainAlloc [
-	| return |
-	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
-	return := objcClass noRetainAlloc.
 	return setIvar: 'stObject' value: return.
 	^return
     ]
@@ -102,23 +87,13 @@ Object subclass: ObjcObject [
 	^self send: selector with: #()
     ]
 
-    basicObjcPtr: aCObject [
-	objcPtr := aCObject
-    ]
-
     objcPtr: aCObject [
 	<category: 'ptivate'>
-	ObjcRuntime retain: aCObject.
- 	self basicObjcPtr: aCObject
+	objcPtr := aCObject
     ]
     
     objcPtr [
 	^objcPtr
-    ]
-
-
-    finalize [
-       ObjcRuntime release: objcPtr
     ]
 
     
@@ -141,6 +116,6 @@ String extend [
 
     asNSString [
 	<category: 'Objc'>
-	^Objc.ObjcObject basicFromPtr: self primAsNSString
+	^Objc.ObjcObject fromPtr: self primAsNSString
     ]
 ]
