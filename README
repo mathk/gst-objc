@@ -1,0 +1,180 @@
+=== Getting gst-objc ===
+
+(If you have a better name idea feel free to give me suggestions.)
+
+You can fetch the source from [https://github.com/mathk/gst-objc|github]:
+<code>
+$ git clone git://github.com/mathk/gst-objc.git
+</code>
+<!--break-->
+Then you have to build it.
+<code>
+$ autoreconf -vi
+$ ./configure
+$ make
+$ [sudo] make install
+</code>
+
+Depending on you platform you may need gnustep.
+You can find all the instruction to build gnustep [http://wiki.gnustep.org/index.php/GNUstep_SVN_Installation_Guide|here].
+
+Here you should be able to load Objc package:
+
+<pre>
+GNU Smalltalk ready
+
+st> PackageLoader fileInPackage: 'Objc'
+Loading package Objc
+2011-05-01 22:17:52.971 gst[91826:903] Load complete
+PackageLoader
+st> 
+
+</pre>
+
+
+=== First window ===
+
+Now that you can load <code>Objc</code> I will show you how to create a <strong>NSWindows</strong>.
+For convenience I will drop every thing in a file myFirstWindow.st
+
+<pre>
+"First load the package"
+Eval [
+    PackageLoader fileInPackage: 'Objc'.
+]
+</pre>
+
+After that we need to create a <strong>NSApplication</strong> that will handle the main event loop.
+
+<pre>
+  nsApplication := Objc.ObjcRuntime at: 'NSApplication'.
+  nsApp := nsApplication sharedApplication.
+</pre>
+
+As you can see when sending <code>#sharedApplication</code> to the object your are in fact forwarding the message to objective-c.
+
+We can then create our first <strong>NSWindows</strong>:
+
+<pre>
+  nsRect :=  Objc.NSRect gcOriginX: 0.0
+		    y: 0.0
+		    width: 100.0
+		    height: 100.0.
+
+  nsWindow :=  Objc.ObjcRuntime at: 'NSWindow'.
+  nsWindow := nsWindow alloc.
+  nsWindow initWithContentRect: nsRect styleMask: 15 backing:Objc.ObjcAppKit nsBackingStoreBuffered defer: (Character value:1).
+  nsWindow setTitle: 'Test windows' asNSString.
+</pre>
+
+<code>nsRect</code> is just a CStruct that tell which size the window is going to have.
+<code>#initWithContentRect:styleMask:backing:defer:</code> and <code>#setTitle:</code> are again forwarded to objective-c. You have to be careful to chose the right type when passing argument to objective-c. For instance the last parameter is of type 'c' in objective-c which is a Character.
+
+<code>#asNSString</code> is a helper to convert from smalltalk string to objective-c string like <code>@"Testing window"</code>.
+
+After that we have to create a <strong>NSView</strong>.
+The way <strong>NSWindow</strong> handle the drawing is by calling <code>#drawRect:</code> on a view.
+So we have to subclass <strong>NSView</strong> and implement the <code>#drawRect:</code> method.
+
+The way to do this is by using class and method pragma.
+
+<pre>
+Objc.ObjcObject subclass: MyNSView [
+    &lt;objcSubclass: 'NSView'&gt;
+
+    drawRect: rect [
+        "if you are running on gnustep you have to use:
+         v@:{_NSRect={_NSPoint=dd}{_NSSize=dd}}
+        and use f or d depending on you arch 32 or 64bit.
+        This need to be improve.
+        "
+	&lt;objcTypeStr:'v@:{CGRect={CGPoint=dd}{CGSize=dd}}'&gt;
+	| nsColor |
+	nsColor := Objc.ObjcRuntime at: 'NSColor'.
+	nsColor redColor set.
+	Objc.ObjcAppKit nsRectFill: self bounds
+    ]
+]
+</pre>
+
+The pragma <code>objcSubclass:</code> tells what is the super class. In oder word <strong>MyNSView</strong> is a subclass of <strong>NSView</strong>.
+
+The pragma <code>objcTypeStr:</code>  tells the type of the objective-c method.
+You can found out more [http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html|here].
+
+The <code>#drawRect:</code> method is pretty simple. It just fill the window in red.
+
+Now we can use this newly create class:
+
+<pre>
+  "Create a new view but don't retain it. Instead autorelease it."
+  view := MyNSView noRetainAlloc.
+  view init.
+  view autorelease.
+
+  nsWindow setContentView: view.
+  nsWindow center.
+  nsWindow orderFront: 0.
+  nsWindow contentView.
+  nsApp run.
+</pre>
+
+
+At this point you should see a small window fill of red.
+That is it for this tutorial.
+
+I hope you  enjoy it.
+Fell free to ask questions or comments.
+
+Last I would like to thanks Paolo Bonzini and David Chisnall for theirs helps and advices.
+
+Complete code:
+
+<pre>
+Eval [
+    PackageLoader fileInPackage: 'Objc'.
+]
+
+Objc.ObjcObject subclass: MyNSView [
+    <objcSubclass: 'NSView'>
+
+    drawRect: rect [
+	<objcTypeStr:'v@:{CGRect={CGPoint=dd}{CGSize=dd}}'>
+	| nsColor |
+	nsColor := Objc.ObjcRuntime at: 'NSColor'.
+	nsColor redColor set.
+	Objc.ObjcAppKit nsRectFill: self bounds
+	 
+    ]
+]
+
+Eval [
+  | view nsInstance nsApplication nsApp nsWindow |
+
+  nsApplication := Objc.ObjcRuntime at: 'NSApplication'.
+  nsApp := nsApplication sharedApplication.
+  nsRect :=  Objc.NSRect gcOriginX: 0.0
+		    y: 0.0
+		    width: 100.0
+		    height: 100.0.
+
+  nsWindow :=  Objc.ObjcRuntime at: 'NSWindow'.
+  nsWindow := nsWindow alloc.
+  nsWindow initWithContentRect: nsRect styleMask: 15 backing:Objc.ObjcAppKit nsBackingStoreBuffered defer: (Character value:1).
+
+  nsWindow setTitle: 'Test windows' asNSString.
+
+  view := MyNSView noRetainAlloc.
+  view init.
+  view autorelease.
+
+  nsWindow setContentView: view.
+  nsWindow center.
+  nsWindow orderFront: 0.
+  nsWindow contentView.
+  nsApp run.
+
+]
+</pre>
+
+
