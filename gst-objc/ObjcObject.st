@@ -20,7 +20,10 @@ Object subclass: ObjcObject [
 	objcClass register.
 	self registerHandler: [:method :message | 
 	    self addObjcMethod: method selector type: message argument.
-	    nil] forPragma: #objcTypeStr:
+	    nil] forPragma: #objcTypeStr:.
+	self registerHandler: [:method :message |
+	    self addObjcMethod: method selector.
+	    nil] forPragma: #objc
 	    
     ]
 
@@ -34,6 +37,10 @@ Object subclass: ObjcObject [
 
     ObjcObject class >> addObjcMethod: selector type: typeStr [
 	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
+    ]
+
+    ObjcObject class >> addObjcMethod: selector [
+	self primAddObjcMethod: selector in: objcClass objcPtr type: nil
     ]
 
     ObjcObject class >> primAddObjcMethod: selector in: class type: typeStr [

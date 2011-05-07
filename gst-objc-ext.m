@@ -528,7 +528,20 @@ gst_addMethod(char * selector, Class cls, char * typeStr)
   objc_ffi_closure* closure;
   void* code;
   int i;
-  NSMethodSignature* sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
+  NSMethodSignature* sig;
+  if (NULL != typeStr)
+    {
+      sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
+    }
+  else
+    {
+      sig = [cls instanceMethodSignatureForSelector: sel_getUid (selector)];
+      if (NULL == sig)
+	{
+	  [NSException raise: @"Closure"
+		  format: @"Fail adding method %s, try decalre it with a type string", selector];
+	}
+    }
   int argc = [sig numberOfArguments];
   
   [sig retain];
