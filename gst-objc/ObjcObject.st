@@ -114,15 +114,3 @@ Object extend [
 	^false
     ]
 ]
-
-String extend [
-    primAsNSString [
-	<category: 'Objc'>
-	<cCall: 'objc_toNSString' returning: #cObject args: #( #self )>
-    ]
-
-    asNSString [
-	<category: 'Objc'>
-	^Objc.ObjcObject fromPtr: self primAsNSString
-    ]
-]

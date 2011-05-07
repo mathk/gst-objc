@@ -2,6 +2,7 @@
 #include <gstpub.h>
 #import <Cocoa/Cocoa.h>
 #import "gst-objc.h"
+#import "gst-string.h"
 #import "objc-proxy.h"
 #ifndef GNU_RUNTIME
 #import <objc/objc-runtime.h>
@@ -19,11 +20,11 @@ typedef struct gst_objc_object
 - (NSRect*) gstBounds;
 @end
 
+void gst_initFFIType ();
 void gst_retain(id object);
 void gst_release(id object);
 int gst_sizeofCGFloat();
 void gst_setIvarOOP(id receiver, const char * name, OOP value);
-NSString* gst_toNSString (char * string);
 void gst_rectFill (NSRect * rect);
 int gst_sendMessageReturnSize (id receiver, SEL selector);
 char* gst_sendMessageReturnType (id receiver, SEL selector);

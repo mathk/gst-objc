@@ -16,7 +16,8 @@ AM_OBJCFLAGS = $(GNUSTEP_CFLAGS)
 #include $(GNUSTEP_MAKEFILES)/common.make
 
 lib_LTLIBRARIES = libgstobjc.la
-libgstobjc_la_SOURCES = gst-objc.m gst-objc.h gst-objc-ext.m gst-objc-ext.h objc-proxy.m objc-proxy.h
+libgstobjc_la_SOURCES = gst-objc.m gst-objc.h gst-objc-ext.m gst-objc-ext.h \
+			objc-proxy.m objc-proxy.h gst-string.h gst-string.m
 libgstobjc_la_LDFLAGS = $(OBJCLIBS) $(LIBFFI_LIBS) $(LIBGMP)
 
 ### -------------------------------------- ###

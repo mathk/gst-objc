@@ -15,9 +15,10 @@ gst_initModule (VMProxy * proxy)
 #else // __APPLE__
   proxy->dlOpen ("libgnustep-base", false);
 #endif  // __APPLE__
+
+  gst_initFFIType ();
   proxy->defineCFunc ("objc_sendMsg", gst_sendMessage);
-  proxy->defineCFunc ("objc_toNSString", gst_toNSString);
-  proxy->defineCFunc ("objc_sizeofCGFloat", gst_sizeofCGFloat);
+   proxy->defineCFunc ("objc_sizeofCGFloat", gst_sizeofCGFloat);
   proxy->defineCFunc ("objc_sendReturnSize", gst_sendMessageReturnSize);
   proxy->defineCFunc ("objc_sendReturnType", gst_sendMessageReturnType);
   proxy->defineCFunc ("objc_setIvarOOP", gst_setIvarOOP);

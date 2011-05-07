@@ -2,36 +2,14 @@
 #import "gst-objc-ext.h"
 
 //extern VMProxy* gst_proxy;
-#ifdef __i386__
-ffi_type *_ffi_type_nspoint_elements[] = {
-	&ffi_type_float, &ffi_type_float, NULL
-};
-#else
-ffi_type *_ffi_type_nspoint_elements[] = {
-	&ffi_type_double, &ffi_type_double, NULL
-};
-#endif
-ffi_type ffi_type_nspoint = {
-	0, 0, FFI_TYPE_STRUCT, _ffi_type_nspoint_elements
-};
-ffi_type *_ffi_type_nsrect_elements[] = {
-	&ffi_type_nspoint, &ffi_type_nspoint, NULL
-};
-ffi_type ffi_type_nsrect = {
-	0, 0, FFI_TYPE_STRUCT, _ffi_type_nsrect_elements
-};
-#if NSUIntegerMax == ULONG_MAX
-ffi_type *_ffi_type_nsrange_elements[] = {
-	&ffi_type_ulong, &ffi_type_ulong, NULL
-};
-#else
-ffi_type *_ffi_type_nsrange_elements[] = {
-	&ffi_type_uint, &ffi_type_uint, NULL
-};
-#endif
-ffi_type ffi_type_nsrange = {
-	0, 0, FFI_TYPE_STRUCT, _ffi_type_nsrange_elements
-};
+ffi_type *ffi_type_cgfloat;
+ffi_type ffi_type_nspoint;
+ffi_type ffi_type_nsrect;
+ffi_type ffi_type_nsrange;
+ffi_type *_ffi_type_nspoint_elements[3];
+ffi_type *_ffi_type_nsrect_elements[3];
+ffi_type *_ffi_type_nsrange_elements[3];
+
 
 typedef struct objc_ffi_closure {
   ffi_closure closure;
@@ -56,6 +34,46 @@ typedef struct objc_ffi_closure {
   return rect;
 }
 @end
+
+void gst_initFFIType ()
+{
+  ffi_type_cgfloat = (sizeof(CGFloat) == sizeof(double)) ? &ffi_type_double : &ffi_type_float;
+  
+  _ffi_type_nspoint_elements[0] = ffi_type_cgfloat;
+  _ffi_type_nspoint_elements[1] = ffi_type_cgfloat;
+  _ffi_type_nspoint_elements[2] = NULL;
+
+
+  ffi_type_nspoint.size = 0;
+  ffi_type_nspoint.alignment = 0;
+  ffi_type_nspoint.type = FFI_TYPE_STRUCT;
+  ffi_type_nspoint.elements = _ffi_type_nspoint_elements;
+
+  _ffi_type_nsrect_elements[0] = &ffi_type_nspoint;
+  _ffi_type_nsrect_elements[1] = &ffi_type_nspoint;
+  _ffi_type_nsrect_elements[2] = NULL;
+ 
+  ffi_type_nsrect.size = 0;
+  ffi_type_nsrect.alignment = 0;
+  ffi_type_nsrect.type = FFI_TYPE_STRUCT;
+  ffi_type_nsrect.elements = _ffi_type_nsrect_elements;
+
+#if NSUIntegerMax == ULONG_MAX
+  _ffi_type_nsrange_elements[0] = &ffi_type_ulong;
+  _ffi_type_nsrange_elements[1] = &ffi_type_ulong;
+  _ffi_type_nsrange_elements[2] = NULL;
+#else
+  _ffi_type_nsrange_elements[0] = &ffi_type_uint;
+  _ffi_type_nsrange_elements[1] = &ffi_type_uint;
+  _ffi_type_nsrange_elements[2] = NULL;
+#endif
+
+  ffi_type_nsrange.size = 0;
+  ffi_type_nsrange.alignment = 0;
+  ffi_type_nsrange.type = FFI_TYPE_STRUCT;
+  ffi_type_nsrange.elements = _ffi_type_nsrange_elements;
+
+}
 
 int
 gst_sizeofCGFloat ()
@@ -229,7 +247,7 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
       *dest = NULL;
       return;
     case '*':
-      *dest = gst_proxy->stringToOOP (*(char**)value);;
+      *dest = gst_proxy->stringToOOP (*(char**)value);
       return;
     case '{':
       *dest = gst_proxy->cObjectToOOP (value);
@@ -299,19 +317,23 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
     case '#':
     case '@':
       objcClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
+      objcObject = (gst_objc_object) OOP_TO_OBJ (value);
       if (gst_proxy->objectIsKindOf (value, objcClass))
-				{
-					objcObject = (gst_objc_object) OOP_TO_OBJ (value);
-					*(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
-				}
+	{
+	  *(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
+	}
       else if (gst_proxy->objectIsKindOf (value, gst_proxy->cObjectClass))
-				{
-					*(id*)dest = (id) gst_proxy->OOPToCObject (value);
-				}
+	{
+	  *(id*)dest = (id) gst_proxy->OOPToCObject (value);
+	}
+      else if (objcObject->objClass == gst_proxy->stringClass)
+	{
+	  *(id*)dest = [[StString alloc] initWithSmalltalk: value];
+	}
       else
-				{
-					*(id*)dest = [StProxy allocWith: value];
-				}
+	{
+	  *(id*)dest = [StProxy allocWith: value];
+	}
       return;
     case 'v':
       *(id*)dest = NULL;
@@ -382,7 +404,7 @@ char*
 gst_sendMessageReturnType (id receiver, SEL selector)
 {
     NSMethodSignature *sig = [receiver methodSignatureForSelector: selector];
-    return [sig methodReturnType];
+    return (char*)[sig methodReturnType];
 }
 
 /* Perform a Objective-C message send */
@@ -584,12 +606,6 @@ gst_release(id object)
 #else
   [object release];
 #endif
-}
-
-NSString *
-gst_toNSString(char * string)
-{
-  return [NSString stringWithUTF8String: string];
 }
 
 void
