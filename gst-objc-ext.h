@@ -15,6 +15,9 @@ typedef struct gst_objc_object
 }
  *gst_objc_object;
 
+/* Initialize threading object */
+void gst_initThreading ();
+
 /* Initialize ffi type */
 void gst_initFFIType ();
 

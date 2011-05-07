@@ -1,7 +1,8 @@
 #include <ffi.h>
 #import "gst-objc-ext.h"
 
-//extern VMProxy* gst_proxy;
+pthread_mutex_t gstProxyMutex;
+
 ffi_type *ffi_type_cgfloat;
 ffi_type ffi_type_nspoint;
 ffi_type ffi_type_nsrect;
@@ -19,6 +20,11 @@ typedef struct objc_ffi_closure {
   ffi_type *arg_types[1];
 }
   objc_ffi_closure;
+
+void gst_initThreading ()
+{
+  pthread_mutex_init (&gstProxyMutex, NULL);
+} 
 
 void gst_initFFIType ()
 {
@@ -524,7 +530,9 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
       gst_boxValue (args[i+2], argsOOP+i, [sig getArgumentTypeAtIndex: i+2]);
     }
   argsOOP[i] = NULL;
+  GST_LOCK_PROXY;
   resultOOP = gst_proxy->vmsgSend (receiver, selector, argsOOP);
+  GST_UNLOCK_PROXY;
   gst_unboxValue (resultOOP, result, [sig methodReturnType]);
 
 }

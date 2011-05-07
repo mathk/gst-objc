@@ -41,8 +41,11 @@ extern VMProxy* gst_proxy;
       gst_boxValue (argumentBuffer, args+i, [sig getArgumentTypeAtIndex: i+2]);
     }
   args[i] = NULL;
-
+  
+  GST_LOCK_PROXY;
   OOP returnOOP = gst_proxy->vmsgSend (stObject, selector, args);
+  GST_UNLOCK_PROXY;
+
   gst_unboxValue (returnOOP, (void*)returnBuffer, [sig methodReturnType]);
   [anInvocation setReturnValue: (void*)returnBuffer];
 }

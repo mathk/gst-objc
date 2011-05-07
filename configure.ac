@@ -27,7 +27,7 @@ GST_HAVE_GMP
 
 _AM_DEPENDENCIES(OBJC)
 AC_CANONICAL_HOST
-LDFLAGS=-module
+LDFLAGS="-module -lpthread -no-undefined"
 case $host in
      *-*-darwin*) OBJCLIBS='-framework Cocoa' ;;
      *)		  AC_CHECK_TOOL(GNUSTEP_CONFIG, [gnustep-config], 
@@ -43,8 +43,7 @@ case $host in
 		 *i386*) AC_DEFINE([__i386__]) ;;
 		 *x86_64*) AC_DEFINE([__x86_64__]) ;;
 esac
-		 
-LDFLAGS+=" -no-undefined"
+
 AC_SUBST(OBJC, [$CC])
 AC_SUBST(OBJCFLAGS, [$CFLAGS])
 AC_SUBST(GNUSTEP_CFLAGS)
