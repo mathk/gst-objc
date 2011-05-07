@@ -20,21 +20,6 @@ typedef struct objc_ffi_closure {
 }
   objc_ffi_closure;
 
-
-@implementation NSView (gst)
-- (NSRect *) gstBounds
-{
-  NSRect * rect = malloc (sizeof (NSRect));
-  NSRect returnRect = [self bounds];
-
-  rect->origin.x = returnRect.origin.x;
-  rect->origin.y = returnRect.origin.y;
-  rect->size.width = returnRect.size.width;
-  rect->size.height = returnRect.size.height;
-  return rect;
-}
-@end
-
 void gst_initFFIType ()
 {
   ffi_type_cgfloat = (sizeof(CGFloat) == sizeof(double)) ? &ffi_type_double : &ffi_type_float;

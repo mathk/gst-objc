@@ -16,9 +16,6 @@ typedef struct gst_objc_object
 }
  *gst_objc_object;
 
-@interface NSView (gs)
-- (NSRect*) gstBounds;
-@end
 
 void gst_initFFIType ();
 void gst_retain(id object);
