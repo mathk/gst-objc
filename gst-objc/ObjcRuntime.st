@@ -5,6 +5,7 @@ CStruct subclass: ObjcType [
 Object subclass: ObjcRuntime [
 
     ObjcRuntime class [
+	
 	at: aClassName [
 	    | nsClass |
 	    nsClass := self objcGetClass: aClassName.
@@ -115,15 +116,6 @@ Object subclass: ObjcRuntime [
 	primClassAddIvar: class name: name size: size alignment: align type: typstr [
 	    <cCall: 'class_addIvar' returning: #uint args: #(#cObject #string #uInt #uchar #string)>
 	]
-	
-	classAddMethod: class sel: selector body: block type: typeStr [
-	    self primClassAddMethod: class objcPtr 
-		 sel: (self selRegisterName: selector)
-		 body: (CCallbackDescriptor for: [:objcSelf :cmd :arg1 | block value: (ObjcObject fromPtr: objcSelf) value: arg1] 
-					    returning: #void 
-					    withArgs: #(#cObject #cObject #cObject))
-		                            type: typeStr
-	]
 
 	objcGetClassList [
 	    | bufferType classes buffer |
@@ -154,3 +146,4 @@ CPtr extend [
 	^'^{gst_object=ll}'
     ]
 ]
+

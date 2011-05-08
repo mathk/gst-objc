@@ -1,5 +1,15 @@
 ObjcObject subclass: ObjcClass [
     | stClass |
+
+    ObjcClass class >> initialize [
+	ObjcRuntime objcGetClassList do: [:each | 
+	    | className |
+	    className := ObjcRuntime classGetName: each.
+	    Namespace current 
+		    at: className asSymbol 
+		    put: (self fromPtr: each)
+	]
+    ]
     
     isClass [
 	^true
@@ -28,4 +38,8 @@ ObjcObject subclass: ObjcClass [
     register [
 	ObjcRuntime objcRegisterClassPair: self
     ]
+]
+
+Eval [
+    ObjcClass initialize
 ]
