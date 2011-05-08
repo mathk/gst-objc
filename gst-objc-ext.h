@@ -49,7 +49,7 @@ char* gst_sendMessageReturnType (id receiver, SEL selector);
 
 /* Add a method to smalltalk object.  This create a call into
    smalltalk whenever a message is send to the ObjC object */
-void gst_addMethod(char * selector, Class cls, char * typeStr);
+void gst_addMethod(char * selector, Class cls, const char * typeStr);
 
 /* Convert from smalltalk to ObjC*/
 void gst_boxValue (void* value, OOP* dest, const char *objctype);

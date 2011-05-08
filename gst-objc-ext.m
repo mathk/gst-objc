@@ -535,27 +535,14 @@ gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* user
 }
 
 void
-gst_addMethod(char * selector, Class cls, char * typeStr)
+gst_addMethodIntern (Class cls, SEL selector, const char * typeStr)
 {
   objc_ffi_closure* closure;
   void* code;
   int i;
-  NSMethodSignature* sig;
-  if (NULL != typeStr)
-    {
-      sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
-    }
-  else
-    {
-      sig = [cls instanceMethodSignatureForSelector: sel_getUid (selector)];
-      if (NULL == sig)
-	{
-	  [NSException raise: @"Closure"
-		  format: @"Fail adding method %s, try decalre it with a type string", selector];
-	}
-    }
+  NSMethodSignature* sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
   int argc = [sig numberOfArguments];
-  
+
   [sig retain];
   closure = (objc_ffi_closure*)ffi_closure_alloc (sizeof (objc_ffi_closure)  + sizeof(ffi_type *) * (argc - 1), &code);
   for (i = 0; i < argc; i++)
@@ -570,11 +557,56 @@ gst_addMethod(char * selector, Class cls, char * typeStr)
   ffi_prep_cif (&closure->cif, FFI_DEFAULT_ABI, argc, closure->return_type, closure->arg_types);
   ffi_prep_closure_loc (&closure->closure, &closure->cif, gst_closureTrampolineMethod, closure, code);
   
-  BOOL result = class_addMethod (cls, sel_getUid (selector), (IMP)code, typeStr);
+  BOOL result = class_addMethod (cls, selector, (IMP)code, typeStr);
   if (NO == result)
     {
       [NSException raise: @"Closure"
 		  format: @"Fail adding method %s", selector];
+    }
+}
+
+void
+gst_addMethod(char * selector, Class cls, const char * typeStr)
+{
+  char* typesEncoding[10];
+  NSMethodSignature* sig;
+  SEL cmd = sel_getUid (selector);
+  if (NULL != typeStr)
+    {
+      gst_addMethodIntern (cls, cmd, typeStr);
+      
+    }
+  else
+    {
+#ifdef GNU_RUNTIME
+      int i;
+      char ** buffer = typesEncoding;
+      int exist = sel_copyTypes_np (selector, buffer, sizeof(typesEncoding));
+      if (exist > sizeof(typesEncoding))
+	{
+	  buffer = calloc (exist, sizeof(char*));
+	  sel_copyTypes_np (selector, buffer, exist);
+	}
+      
+      for (i = 0; i < exist; i++)
+	{
+	  sig = [NSMethodSignature signatureWithObjCTypes: buffer[i]];
+	  gst_addMethodIntern (cls, cmd, buffer[i]);
+	  
+	}
+      if (exist > sizeof(typesEncoding))
+	{
+	  free (buffer);
+	}
+#else
+      Method mth = class_getInstanceMethod (cls, sel_registerName (selector));
+      if (mth == NULL)
+	{
+	  [NSException raise: @"Closure"
+		  format: @"Fail adding method %s, unable to get type encoding", selector];
+	}
+      gst_addMethodIntern (cls, cmd, method_getTypeEncoding(mth));
+#endif
     }
 }
 
