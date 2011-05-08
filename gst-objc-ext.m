@@ -2,6 +2,8 @@
 #import "gst-objc-ext.h"
 
 pthread_mutex_t gstProxyMutex;
+OOP gstObjcObjectClass;
+OOP gstUnicodeString;
 
 ffi_type *ffi_type_cgfloat;
 ffi_type ffi_type_nspoint;
@@ -24,7 +26,12 @@ typedef struct objc_ffi_closure {
 void gst_initThreading ()
 {
   pthread_mutex_init (&gstProxyMutex, NULL);
-} 
+}
+
+void gst_initGlobal ()
+{
+  gstUnicodeString = gst_proxy->classNameToOOP("UnicodeString");
+}
 
 void gst_initFFIType ()
 {
@@ -254,7 +261,6 @@ void
 gst_unboxValue (OOP value, void *dest, const char *objctype)
 {
   gst_SkipQualifiers (&objctype);
-  OOP objcClass;
   gst_objc_object objcObject;
   switch(*objctype)
     {
@@ -307,9 +313,12 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
     case '^':
     case '#':
     case '@':
-      objcClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
+      if (NULL == gstObjcObjectClass)
+	{
+	  gstObjcObjectClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
+	}
       objcObject = (gst_objc_object) OOP_TO_OBJ (value);
-      if (gst_proxy->objectIsKindOf (value, objcClass))
+      if (gst_proxy->objectIsKindOf (value, gstObjcObjectClass))
 	{
 	  *(id*)dest = (id) gst_proxy->OOPToCObject (objcObject->objcPtr);
 	}
@@ -320,6 +329,10 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
       else if (objcObject->objClass == gst_proxy->stringClass)
 	{
 	  *(id*)dest = [[StString alloc] initWithSmalltalk: value];
+	}
+      else if (objcObject->objClass == gst_proxy->arrayClass)
+	{
+	  *(id*)dest = [[StArray alloc] initWithSmalltalk: value];
 	}
       else
 	{
@@ -334,41 +347,25 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
       return;
     case '{':
       {
-#ifdef GNU_RUNTIME
-	if (0 == strncmp(objctype, "{_NSRect", 8))
-#else
 	if (0 == strcmp(objctype, @encode(NSRect)))
-#endif
 	  {
 	    NSRect* v = (NSRect*) gst_proxy->OOPToCObject (value);
 	    *(NSRect*)dest = *v;
 	    break;
 	  }
-#ifdef GNU_RUNTIME
-	else if (0 == strncmp(objctype, "{_NSRange", 9))
-#else
 	else if (0 == strcmp(objctype, @encode(NSRange)))
-#endif
 	  {
 	    NSRange* v = (NSRange*) gst_proxy->OOPToCObject (value);
 	    *(NSRange*)dest = *v;
 	    break;
 	  }
-#ifdef GNU_RUNTIME
-	else if (0 == strncmp(objctype, "{_NSPoint", 9))
-#else
 	else if (0 == strcmp(objctype, @encode(NSPoint)))
-#endif
 	  {
 	    NSPoint* v = (NSPoint*) gst_proxy->OOPToCObject (value);
 	    *(NSPoint*)dest = *v;
 	    break;
 	  }
-#ifdef GNU_RUNTIME
-	else if (0 == strncmp(objctype, "{_NSSize", 8))
-#else
 	else if (0 == strcmp(objctype, @encode(NSSize)))
-#endif
 	  {
 	    NSSize* v = (NSSize*) gst_proxy->OOPToCObject (value);
 	    *(NSSize*)dest = *v;

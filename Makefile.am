@@ -17,7 +17,8 @@ AM_OBJCFLAGS = $(GNUSTEP_CFLAGS)
 
 lib_LTLIBRARIES = libgstobjc.la
 libgstobjc_la_SOURCES = gst-objc.m gst-objc.h gst-objc-ext.m gst-objc-ext.h \
-			objc-proxy.m objc-proxy.h gst-string.h gst-string.m
+			objc-proxy.m objc-proxy.h gst-string.h gst-string.m \
+			gst-array.h gst-array.m
 libgstobjc_la_LDFLAGS = $(OBJCLIBS) $(LIBFFI_LIBS) $(LIBGMP)
 
 ### -------------------------------------- ###

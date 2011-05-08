@@ -82,7 +82,10 @@ Object subclass: ObjcRuntime [
 
 	logObject: object [
 	    <category: 'instance'>
-	    self log: '%@' asNSString objcPtr with: object
+	    | str |
+	    str := (self at: 'NSString') alloc.
+	    str initWithUTF8String: '%@'.
+	    self log: str with: object
 	]
 
 	primObjcAllocateClassPairSuper: aSuperClass name: aName indexable: aInt [

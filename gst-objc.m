@@ -18,6 +18,7 @@ gst_initModule (VMProxy * proxy)
 
   gst_initFFIType ();
   gst_initThreading ();
+  gst_initGlobal ();
   proxy->defineCFunc ("objc_sendMsg", gst_sendMessage);
   proxy->defineCFunc ("objc_sizeofCGFloat", gst_sizeofCGFloat);
   proxy->defineCFunc ("objc_sendReturnSize", gst_sendMessageReturnSize);

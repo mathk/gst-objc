@@ -2,6 +2,7 @@
 #import <Cocoa/Cocoa.h>
 #import "gst-objc.h"
 #import "gst-string.h"
+#import "gst-array.h"
 #import "objc-proxy.h"
 #ifndef GNU_RUNTIME
 #import <objc/objc-runtime.h>
@@ -20,6 +21,9 @@ void gst_initThreading ();
 
 /* Initialize ffi type */
 void gst_initFFIType ();
+
+/* Initialize some variables */
+void gst_initGlobal ();
 
 /* Retain ObjC object */
 void gst_retain(id object);
