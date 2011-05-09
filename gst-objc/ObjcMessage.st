@@ -1,5 +1,5 @@
 Object subclass: ObjcMessage [
-    | selector receiver returnHolder  |
+    | selector receiver returnHolder superclass  |
     
     ObjcMessage class [
 	| unboxRoutine |
@@ -9,6 +9,14 @@ Object subclass: ObjcMessage [
 	^(self new)
 	    receiver: ptr;
 	    selector: sel;
+	    yourself
+    ]
+
+    ObjcMessage class >> receiver: ptr selector: sel super: aClass [
+	^(self new)
+	    receiver: ptr;
+	    selector: sel;
+	    superclass: aClass;
 	    yourself
     ]
 
@@ -83,6 +91,10 @@ Object subclass: ObjcMessage [
 	selector := sel
     ]
 
+    superclass: aClass [
+	superclass := aClass
+    ]
+
     perform [
 	^self performWith: #()
     ]
@@ -94,6 +106,17 @@ Object subclass: ObjcMessage [
 	    argc: args size
 	    argv: args
 	    super: nil
+	    returning: returnHolder. 
+	^self boxReturn
+    ]
+
+    performSuperWith: args [
+	returnHolder := ByteArray new: self returnSize.
+	ObjcRuntime objcMsgSend: receiver
+	    sel: selector
+	    argc: args size
+	    argv: args
+	    super: superclass
 	    returning: returnHolder. 
 	^self boxReturn
     ]

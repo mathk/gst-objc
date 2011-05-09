@@ -29,10 +29,18 @@ Object subclass: ObjcObject [
 
     ObjcObject class >> alloc [
 	| return |
-	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
-	return := objcClass alloc.
+	return := self objcClass alloc.
 	return setIvar: 'stObject' value: return.
 	^return
+    ]
+    
+    ObjcObject class >> objcSuperclass [
+	self objcClass superclass
+    ]
+
+    ObjcObject class >> objcClass [
+	objcClass ifNil: [self error: 'You must use ObjcClass or a subclass to instanciate a NSObject'].
+	^objcClass
     ]
 
     ObjcObject class >> addObjcMethod: selector type: typeStr [
@@ -52,6 +60,9 @@ Object subclass: ObjcObject [
     ]
 
     doesNotUnderstand: aMessage [
+	(self respondsTo: aMessage selector) ifTrue: [
+	    ^self superSend: aMessage selector with: aMessage arguments
+	].
 	^self send: aMessage selector with: aMessage arguments
     ]
     
@@ -80,6 +91,13 @@ Object subclass: ObjcObject [
 	message := ObjcMessage receiver: self objcPtr selector: (ObjcRuntime selGetUid: selector).
 	^message performWith: arguments
     ]
+    
+    superSend: selector with: arguments [
+	| message |
+	message := ObjcMessage receiver: self objcPtr selector: (ObjcRuntime selGetUid: selector) super: self objcClass superclass objcPtr.
+	^message performSuperWith: arguments
+    ]
+
 
     intSend: selector with: arguments [
 	| objcSel |
@@ -101,6 +119,10 @@ Object subclass: ObjcObject [
     
     objcPtr [
 	^objcPtr
+    ]
+
+    objcClass [
+	^self class objcClass
     ]
 
     

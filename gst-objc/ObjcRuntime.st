@@ -52,6 +52,11 @@ Object subclass: ObjcRuntime [
 	    <cCall: 'class_getName' returning: #string args: #( #cObject )>
 	]
 
+	classGetSuperclass: aClass [
+	    <category: 'class'>
+	    <cCall: 'class_getSuperclass' returning: #cObject args: #(#cObject)>
+	]
+
 	objcMsgSend: receiver sel: selector argc: aInt argv: args super: class returning: buffer [
 	    <category: 'instance'>
 	    <cCall: 'objc_sendMsg' returning: #void args: #( #cObject #cObject #int #smalltalk #cObject #byteArrayOut )>

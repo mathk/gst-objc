@@ -434,6 +434,8 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
 #else // NOT GNU_RUNTIME
   if (superClass)
     {
+      struct objc_super sup = {receiver, superClass};
+      receiver = (id)&sup;
       switch (*[sig methodReturnType])
 	{
 	case '{':

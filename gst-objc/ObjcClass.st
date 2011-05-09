@@ -14,6 +14,10 @@ ObjcObject subclass: ObjcClass [
     isClass [
 	^true
     ]
+
+    superclass [
+	^self class fromPtr: (ObjcRuntime classGetSuperclass: self objcPtr)
+    ]
     
     stClass [
 	^stClass ifNil: [ObjcObject] ifNotNil: [stClass]
