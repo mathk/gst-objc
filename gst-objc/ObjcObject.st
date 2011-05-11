@@ -5,9 +5,33 @@ Object subclass: ObjcObject [
     ObjcObject class [
 	| objcClass |
     ]
+
+    ObjcObject class >> typeMap [
+	<category: 'private - accessing'>
+	^##(| dict |
+	    dict := LookupTable new.
+	    dict at: #id put: CObjcId.
+	    dict at: #sel put: CObjcSel.
+	    dict at: #CGFloat put: CCGFloat.
+	    dict at: #ulong put: CULong.
+	    dict at: #uLong put: CULong.
+	    dict at: #uint put: CUInt.
+	    dict at: #uInt put: CUInt.
+	    dict at: #uchar put: CUChar.
+	    dict at: #uChar put: CUChar.
+	    dict at: #ushort put: CUShort.
+	    dict at: #uShort put: CUShort.
+	    dict at: #long put: CLong.
+	    dict at: #short put: CShort.
+	    dict at: #int put: CInt.
+	    dict at: #char put: CChar.
+	    dict at: #void put: CVoid.
+	    dict
+	    )
+    ]
 		
     ObjcObject class >> fromPtr: aCObject [
-	<category: 'private'>
+	<category: 'private - construct'>
 	^(self new)
 	    objcPtr: aCObject;
 	    yourself
@@ -23,7 +47,10 @@ Object subclass: ObjcObject [
 	    nil] forPragma: #objcTypeStr:.
 	self registerHandler: [:method :message |
 	    self addObjcMethod: method selector.
-	    nil] forPragma: #objc
+	    nil] forPragma: #objc.
+	self registerHandler: [:method :message |
+	    self addObjcMethod: method selector typeBuildWith: message arguments.
+	    nil] forPragma: #objcReturning:args:
 	    
     ]
 
@@ -45,6 +72,24 @@ Object subclass: ObjcObject [
 
     ObjcObject class >> addObjcMethod: selector type: typeStr [
 	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
+    ]
+
+    ObjcObject class >> addObjcMethod: selector typeBuildWith: args [
+	| typeStr |
+	typeStr := self buildObjcTypeStrReturning: args first args: args second.
+	self primAddObjcMethod: selector in: objcClass objcPtr type: typeStr
+    ]
+
+    ObjcObject class >> buildObjcTypeStrReturning: returning args: args [
+	| typeList |
+	typeList := OrderedCollection new.
+	typeList add: (self typeMap at: returning) objcTypeStr.
+	typeList add: (self typeMap at: #id) objcTypeStr.
+	typeList add: (self typeMap at: #sel) objcTypeStr.
+	args do: [:each |
+	    typeList add: (self typeMap at: each) objcTypeStr.
+	].
+	^typeList join
     ]
 
     ObjcObject class >> addObjcMethod: selector [

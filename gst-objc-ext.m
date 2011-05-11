@@ -307,7 +307,15 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
       *(BOOL*)dest = (BOOL) gst_proxy->OOPToBool (value);
       break;
     case ':':
-      *(SEL*)dest = (SEL) gst_proxy->OOPToCObject (value);
+      if (gst_proxy->objectIsKindOf (value, gst_proxy->stringClass))
+	{
+	  char * selector = gst_proxy->OOPToString (value);
+	  *(SEL*)dest = sel_getUid(selector);
+	}
+      else
+	{
+	  *(SEL*)dest = (SEL) gst_proxy->OOPToCObject (value);
+	}
       break;
     /*case '(': TODO */
     case '^':
@@ -338,13 +346,13 @@ gst_unboxValue (OOP value, void *dest, const char *objctype)
 	{
 	  *(id*)dest = [StProxy allocWith: value];
 	}
-      return;
+      break;
     case 'v':
       *(id*)dest = NULL;
-      return;
+      break;
     case '*':
-      *(char**)dest = gst_proxy->OOPToString (value);;
-      return;
+      *(char**)dest = gst_proxy->OOPToString (value);
+      break;;
     case '{':
       {
 	if (0 == strcmp(objctype, @encode(NSRect)))

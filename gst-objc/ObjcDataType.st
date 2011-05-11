@@ -45,6 +45,21 @@ CScalar subclass: CCGFloat [
     ]
 ]
 
+CObject subclass: CObjcId [
+    CObjcId class >> objcTypeStr [ ^'@']
+    objcTypeStr [ ^'@']
+]
+
+CObject subclass: CVoid [
+    CVoid class >> objcTypeStr [ ^'v']
+    objcTypeStr [ ^'v']
+]
+
+CObject subclass: CObjcSel [
+    CObjcSel class >> objcTypeStr [ ^':']
+    objcTypeStr [ ^':']
+]
+
 CStruct subclass: NSSize [
     <declaration: #((#width #{CCGFloat}) (#height #{CCGFloat}))>
 
@@ -93,4 +108,60 @@ CStruct subclass: NSRange [
 	return length value: length.
 	^return
     ]
+]
+
+
+CFloat extend [
+    CFloat class >> objcTypeStr [^'f']
+    objcTypeStr [^'f']
+]
+
+CDouble extend [
+    CDouble class >> objcTypeStr [^'d']
+    objcTypeStr [^'d']
+]
+
+CInt extend [
+    CInt class >> objcTypeStr [^'i']
+    objcTypeStr [^'i']
+]
+
+CUInt extend [
+    CUInt class >> objcTypeStr [^'I']
+    objcTypeStr [^'I']
+]
+
+CLong extend [
+    CLong class >> objcTypeStr [^'l']
+    objcTypeStr [^'l']
+]
+
+CULong extend [
+    CULong class >> objcTypeStr [^'L']
+    objcTypeStr [^'L']
+]
+
+CChar extend [
+    CChar class >> objcTypeStr [^'c']
+    objcTypeStr [^'c']
+]
+
+CUChar extend [
+    CUChar class >> objcTypeStr [^'C']
+    objcTypeStr [^'C']
+]
+
+CShort extend [
+    CShort class >> objcTypeStr [^'s']
+    objcTypeStr [^'s']
+]
+
+CUShort extend [
+    CUShort class >> objcTypeStr [^'S']
+    objcTypeStr [^'S']
+]
+
+CBoolean extend [
+    CBoolean class >> objcTypeStr [^'B']
+    objcTypeStr [^'B']
 ]
