@@ -1,6 +1,13 @@
 ObjcObject subclass: ObjcClass [
     | stClass |
 
+    ObjcClass class >> fromPtr: aCObject [
+	<category: 'private - construct'>
+	^(self new)
+	    objcPtr: aCObject;
+	    yourself
+    ]
+
     ObjcClass class >> initialize [
 	ObjcRuntime objcGetClassList do: [:each | 
 	    | className |

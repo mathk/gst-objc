@@ -243,6 +243,10 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
 	{
 	  *dest = [object getStObject];
 	}
+      else if ([object isSmalltalk])
+	{
+	  *dest = [object stObject];
+	}
       else
 	{
 	  *dest = gst_proxy->cObjectToOOP (object);

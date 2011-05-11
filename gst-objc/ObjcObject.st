@@ -2,6 +2,8 @@ Object subclass: ObjcObject [
 
     | objcPtr isClass |
 
+    ObjcCache := WeakValueLookupTable new.
+
     ObjcObject class [
 	| objcClass |
     ]
@@ -29,12 +31,15 @@ Object subclass: ObjcObject [
 	    dict
 	    )
     ]
+
 		
     ObjcObject class >> fromPtr: aCObject [
 	<category: 'private - construct'>
-	^(self new)
-	    objcPtr: aCObject;
-	    yourself
+	^ObjcCache at: aCObject ifAbsentPut: [
+	    (self new)
+		objcPtr: aCObject;
+		yourself
+	]
     ]
 
     ObjcObject class >> objcSubclass: aString [
