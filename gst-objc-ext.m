@@ -23,6 +23,13 @@ typedef struct objc_ffi_closure {
 }
   objc_ffi_closure;
 
+@implementation NSObject (gst)
+- (BOOL)isSmalltalk
+{
+  return NO;
+}
+@end
+
 void gst_initThreading ()
 {
   pthread_mutex_init (&gstProxyMutex, NULL);
@@ -617,6 +624,38 @@ gst_addMethod(char * selector, Class cls, const char * typeStr)
 	}
       gst_addMethodIntern (cls, cmd, method_getTypeEncoding(mth));
 #endif
+    }
+}
+
+BOOL
+gst_isSmalltalk (id self, SEL _cmd)
+{
+  return YES;
+}
+
+OOP
+gst_stObject (id self, SEL _cmd)
+{
+  Ivar var = class_getInstanceVariable ([self class], "stObject");
+
+  ptrdiff_t diff = ivar_getOffset(var);
+  return *(OOP*)((ptrdiff_t)self+diff);
+}
+
+void
+gst_makeSmalltalk (Class cls)
+{
+  BOOL result = class_addMethod (cls, @selector(isSmalltalk), (IMP)gst_isSmalltalk, "C@:");
+  if (NO == result)
+    {
+      [NSException raise: @"Closure"
+		  format: @"Fail adding method isSmalltalk"];
+    }
+  result = class_addMethod (cls, @selector(stObject), (IMP)gst_stObject, "^c@:");
+  if (NO == result)
+    {
+      [NSException raise: @"Closure"
+		  format: @"Fail adding method stObject"];
     }
 }
 

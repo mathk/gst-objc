@@ -1,5 +1,5 @@
 #include <gstpub.h>
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "gst-objc.h"
 #import "gst-string.h"
 #import "gst-array.h"
@@ -7,6 +7,10 @@
 #ifndef GNU_RUNTIME
 #import <objc/objc-runtime.h>
 #endif
+
+@interface NSObject (gst)
+- (BOOL)isSmalltalk;
+@end
 
 typedef struct gst_objc_object
 {
@@ -59,4 +63,8 @@ void gst_unboxValue (OOP value, void* dest, const char *objctype);
 
 /* Send a message to an ObjC object */
 void gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass, char* result);
+
+/* Make a sublcass behave as a smalltalk object. Especialy when
+   returning this object into smalltalk */
+void gst_makeSmalltalk (Class cls);
 

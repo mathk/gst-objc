@@ -106,8 +106,15 @@ Object subclass: ObjcRuntime [
 	    self primObjcRegisterClassPair: aClass objcPtr
 	]
 
+	objcMakeSmalltalk: aClass [
+	    <cCall: 'objc_makeSmalltalk' returning: #void args: #(#cObject)>
+	]
+
 	objcAllocateClassPairSuper: aSuperName name: aName indexable: aInt [
-	    ^ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt)
+	    | class |
+	    class := ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt).
+	    self objcMakeSmalltalk: class objcPtr.
+	    ^class
 	]
 
 	classAddIvar: class name: name type: type [
