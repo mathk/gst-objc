@@ -249,7 +249,16 @@ gst_boxValue (void* value, OOP* dest, const char *objctype)
 	}
       else
 	{
-	  *dest = gst_proxy->cObjectToOOP (object);
+	  GST_LOCK_PROXY;
+	  OOP tmp = gst_proxy->cObjectToOOP (object);
+	  OOP selector = gst_proxy->symbolToOOP("fromPtr:");
+	  if (NULL == gstObjcObjectClass)
+	    {
+	      gstObjcObjectClass = gst_proxy->classNameToOOP("Objc.ObjcObject");
+	    }
+	  OOP resultOOP = gst_proxy->msgSend (gstObjcObjectClass, selector, tmp, NULL);
+	  GST_UNLOCK_PROXY;
+	  *dest = resultOOP;
 	}
       return;
     case 'v':
@@ -272,6 +281,9 @@ void
 gst_unboxValue (OOP value, void *dest, const char *objctype)
 {
   gst_SkipQualifiers (&objctype);
+  if (value == gst_proxy->nilOOP)
+    return;
+
   gst_objc_object objcObject;
   switch(*objctype)
     {
@@ -418,6 +430,9 @@ gst_sendMessageReturnType (id receiver, SEL selector)
 void
 gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass, char* result)
 {
+  // Avoid dead lock since we may com from a
+  // trampoline and we may call smalltalk again
+  GST_UNLOCK_PROXY;
   void *methodIMP;
   if (receiver == nil)
     {
@@ -506,6 +521,7 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
 		  format: @"Error preparing call signature"];
     }
   char unboxedArgumentsBuffer[[sig numberOfArguments]][[sig frameLength]];
+  memset (unboxedArgumentsBuffer, 0, [sig numberOfArguments]*[sig frameLength]);
   void *unboxedArguments[[sig numberOfArguments]];
   unboxedArguments[0] = &receiver;
   unboxedArguments[1] = &selector;
@@ -520,8 +536,9 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
 
   //char msgSendRet[[sig methodReturnLength]];
   ffi_call(&cif, methodIMP, result, unboxedArguments);
-  
-  //return gst_boxValue(msgSendRet, [sig methodReturnType]);
+
+  // Returnning to smalltalk
+  GST_LOCK_PROXY;
 }
 
 static void
