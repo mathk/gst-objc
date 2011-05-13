@@ -3,7 +3,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface StProxy : NSObject {
+@interface StProxy : NSObject  <SmalltalkProxy> {
   OOP stObject;
 }
 + (StProxy*) allocWith: (OOP)stObject;

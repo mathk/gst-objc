@@ -7,6 +7,11 @@
 #include <objc/objc-runtime.h>
 #endif
 
+@protocol SmalltalkProxy
+- (OOP)getStObject;
+- (BOOL)isStProxy;
+@end
+
 /* Smallltalk proxy */
 extern VMProxy* gst_proxy;
 

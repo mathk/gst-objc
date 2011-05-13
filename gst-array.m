@@ -1,7 +1,12 @@
 #import "gst-array.h"
 
 @implementation StArray
-- (OOP)getSmalltalk
+- (BOOL)isStProxy
+{
+  return YES;
+}
+
+- (OOP)getStObject
 {
   return stArray;
 }

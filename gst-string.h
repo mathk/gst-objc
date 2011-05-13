@@ -1,9 +1,11 @@
 #import "gst-objc-ext.h"
 
-@interface StString : NSString
+@interface StString : NSString <SmalltalkProxy>
 {
   OOP stString;
 }
+- (BOOL)isStProxy;
+- (OOP)getStObject;
 - (StString*)initWithSmalltalk: (OOP)stValue;
 - (OOP)getSmalltalk;
 - (NSUInteger)length;

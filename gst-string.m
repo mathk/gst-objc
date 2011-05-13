@@ -26,7 +26,12 @@
     }
 }
 
-- (OOP)getSmalltalk
+- (BOOL) isStProxy
+{
+  return YES;
+}
+
+- (OOP)getStObject
 {
   return stString;
 }
