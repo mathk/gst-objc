@@ -46,8 +46,8 @@ loop.
     nsApplication := Objc.ObjcRuntime at: 'NSApplication'.
     nsApp := nsApplication sharedApplication.
 
-As you can see when sending `#sharedApplication` to the object your are in fact
-forwarding the message to objective-c.
+As you can see, when sending `#sharedApplication` to the object, you are in fact
+forwarding the message to Objective-C.
 
 We can then create our first `NSWindows`:
 
@@ -63,11 +63,11 @@ We can then create our first `NSWindows`:
 
 `nsRect` is just a CStruct that tell which size the window is going to have.
 `#initWithContentRect:styleMask:backing:defer:` and `#setTitle:` are again
-forwarded to objective-c. You have to be careful to chose the right type when
-passing argument to objective-c. For instance the last parameter is of type 'c'
-in objective-c which is a Character.
+forwarded to Objective-C. You have to be careful to chose the right type when
+passing argument to Ojective-C. For instance the last parameter is of type 'c'
+in Objective-C which is a Character.
 
-`#asNSString` is a helper to convert from smalltalk string to objective-c string
+`#asNSString` is a helper to convert from Smalltalk string to Objective-C string,
 like `@"Testing window"`.
 
 After that we have to create a `NSView`.  The way `NSWindow` handles the drawing
@@ -96,7 +96,7 @@ The way to do this is by using class and method pragma.
 The pragma `objcSubclass:` tells what is the super class. In other words
 `MyNSView` is a subclass of `NSView`.
 
-The pragma `objcTypeStr:`  tells the type of the objective-c method.  You can
+The pragma `objcTypeStr:`  tells the type of the Objective-C method.  You can
 found out more
 [here](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html).
 
