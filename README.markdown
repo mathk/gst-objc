@@ -37,7 +37,7 @@ For convenience I will drop every thing in a file `myFirstWindow.st`.
 
     "First load the package"
     Eval [
-        PackageLoader fileInPackage: 'Objc'.
+      PackageLoader fileInPackage: 'Objc'.
     ]
 
 After that we need to create an `NSApplication` that will handle the main event
