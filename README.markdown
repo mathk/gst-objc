@@ -59,8 +59,8 @@ We can then create our first `NSWindows`:
     nsWindow := Objc.NSWindow alloc.
     nsWindow initWithContentRect: nsRect 
     	               styleMask: 15 
-		         backing: Objc.ObjcAppKit nsBackingStoreBuffered 
-			   defer: (Character value:1).
+                         backing: Objc.ObjcAppKit nsBackingStoreBuffered 
+                           defer: (Character value:1).
     nsWindow setTitle: 'Test windows'.
 
 `nsRect` is just a CStruct that tell which size the window is going to
@@ -150,7 +150,7 @@ Complete code:
 
       nsWindow :=  Objc.NSWindow alloc.
       	       initWithContentRect: nsRect 
-               		 styleMask: 15
+                         styleMask: 15
                            backing: Objc.ObjcAppKit nsBackingStoreBuffered 
                              defer: (Character value:1).
 
