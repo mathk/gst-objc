@@ -10,6 +10,7 @@
 
 @interface NSObject (gst)
 - (BOOL)isSmalltalk;
+- (BOOL)isStProxy;
 @end
 
 typedef struct gst_objc_object

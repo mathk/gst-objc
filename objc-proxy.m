@@ -10,6 +10,11 @@ extern VMProxy* gst_proxy;
   return [[self alloc] initWith: stObject];
 }
 
+- (BOOL)isStProxy
+{
+  return YES;
+}
+
 - (OOP) getStObject
 {
   return stObject;

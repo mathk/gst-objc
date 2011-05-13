@@ -28,6 +28,11 @@ typedef struct objc_ffi_closure {
 {
   return NO;
 }
+
+- (BOOL)isStProxy
+{
+  return NO;
+}
 @end
 
 void gst_initThreading ()

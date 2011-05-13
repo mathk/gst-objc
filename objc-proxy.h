@@ -9,6 +9,7 @@
 + (StProxy*) allocWith: (OOP)stObject;
 - (StProxy*) initWith:  (OOP)stObj;
 - (OOP) getStObject;
-- (void) forwardInvocation: (NSInvocation*) anInvocation; 
+- (void) forwardInvocation: (NSInvocation*) anInvocation;
+- (BOOL) isStProxy;
 @end
 
