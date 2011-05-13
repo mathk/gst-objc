@@ -120,7 +120,8 @@ Now we can use this newly created class:
 At this point you should see a small window fill of red.
 
 Last I would like to thanks Paolo Bonzini and David Chisnall for
-theirs help and advice.
+theirs help and advice and also thanks the kind review of this
+document by Jonathan Sterling
 
 Complete code:
 
