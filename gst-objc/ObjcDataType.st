@@ -165,3 +165,29 @@ CBoolean extend [
     CBoolean class >> objcTypeStr [^'B']
     objcTypeStr [^'B']
 ]
+
+CObject subclass: COOP [
+    COOP class >> objcTypeStr [
+	^'^{oop_s=ll}'
+    ]
+
+    COOP class >> sizeof [
+	^CPtr sizeof
+    ]
+
+    COOP class >> alignof [
+	^CPtr alignof
+    ]
+
+    sizeof [
+	^CPtr sizeof
+    ]
+
+    alignof [
+	^CPtr alignof
+    ]
+
+    objcTypeStr [
+	^'^{oop_s=ll}'
+    ]
+]

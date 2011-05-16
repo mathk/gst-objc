@@ -28,6 +28,7 @@ Object subclass: ObjcObject [
 	    dict at: #int put: CInt.
 	    dict at: #char put: CChar.
 	    dict at: #void put: CVoid.
+	    dict at: #oop put: COOP.
 	    dict
 	    )
     ]
@@ -43,9 +44,18 @@ Object subclass: ObjcObject [
     ]
 
     ObjcObject class >> objcSubclass: aString [
+	self objcSubclass: aString iVars: #()    
+    ]
+
+    ObjcObject class >> objcSubclass: aString iVars: array [
 	objcClass := ObjcRuntime objcAllocateClassPairSuper: aString name: self name indexable: 0.
 	objcClass stClass: self.
-	objcClass addIvar: 'stObject' type: CPtr.
+	objcClass addIvar: 'stObject' type: (self typeMap at: #oop).
+	array do: [:each |
+	    each size < 2 ifTrue: [self error: 'You must declare the name and the type of the instance variable'].
+	    objcClass addIvar: each first type: (self typeMap at: each second).
+	    self addMutator: each first type: (self typeMap at: each second).
+	].
 	objcClass register.
 	self registerHandler: [:method :message | 
 	    self addObjcMethod: method selector type: message argument.
@@ -56,7 +66,10 @@ Object subclass: ObjcObject [
 	self registerHandler: [:method :message |
 	    self addObjcMethod: method selector typeBuildWith: message arguments.
 	    nil] forPragma: #objcReturning:args:
-	    
+    ]
+
+    ObjcObject class >> addMutator: string type: aType [
+	
     ]
 
     ObjcObject class >> alloc [

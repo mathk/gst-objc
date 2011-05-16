@@ -148,13 +148,3 @@ Object subclass: ObjcRuntime [
 
 ]
 
-CPtr extend [
-    CPtr class >> objcTypeStr [
-	^'^{gst_object=ll}'
-    ]
-
-    objcTypeStr [
-	^'^{gst_object=ll}'
-    ]
-]
-
