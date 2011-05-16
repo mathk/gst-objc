@@ -69,7 +69,8 @@ Object subclass: ObjcObject [
     ]
 
     ObjcObject class >> addMutator: string type: aType [
-	
+	ObjcRuntime objcAddGetter: string selector: string inClass: self objcClass type: aType objcTypeStr.
+	ObjcRuntime objcAddSetter: string selector: string, ':' inClass: self objcClass type: aType objcTypeStr.
     ]
 
     ObjcObject class >> alloc [

@@ -1,5 +1,4 @@
-
-#import "gst-objc-ext.h"
+#import "gst-objc.h"
 #import <Foundation/Foundation.h>
 
 

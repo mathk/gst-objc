@@ -1,6 +1,5 @@
 #include <gstpub.h>
 #include <pthread.h>
-#import "gst-objc-ext.h"
 #import <Foundation/Foundation.h>
 //#import "LKInterpreterRuntime.h"
 #ifndef GNU_RUNTIME
@@ -11,6 +10,8 @@
 - (OOP)getStObject;
 - (BOOL)isStProxy;
 @end
+
+#import "gst-objc-ext.h"
 
 /* Smallltalk proxy */
 extern VMProxy* gst_proxy;

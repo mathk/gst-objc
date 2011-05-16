@@ -1,4 +1,4 @@
-#import "gst-objc-ext.h"
+#import "gst-objc.h"
 
 @interface StString : NSString <SmalltalkProxy>
 {

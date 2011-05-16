@@ -69,3 +69,9 @@ void gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superC
    returning this object into smalltalk */
 void gst_makeSmalltalk (Class cls);
 
+/* Add a setter to a instance variable of an objc object */
+void gst_addSetter (char * iVarName, char * setterName, Class cls, const char * typeStr);
+
+/* Add a getter to a instance variable of an objc object */
+void gst_addGetter (char * iVarName, char * getterName, Class cls, const char * typeStr);
+

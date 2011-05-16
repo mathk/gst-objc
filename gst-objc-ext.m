@@ -13,6 +13,7 @@ ffi_type *_ffi_type_nspoint_elements[3];
 ffi_type *_ffi_type_nsrect_elements[3];
 ffi_type *_ffi_type_nsrange_elements[3];
 
+typedef void (*trampoline) (ffi_cif*, void*, void**, void*);
 
 typedef struct objc_ffi_closure {
   ffi_closure closure;
@@ -22,6 +23,15 @@ typedef struct objc_ffi_closure {
   ffi_type *arg_types[1];
 }
   objc_ffi_closure;
+
+typedef struct objc_ffi_accessor_closure {
+  ffi_closure closure;
+  char *iVarName;
+  ffi_cif cif;
+  ffi_type *return_type;
+  ffi_type *arg_types[1];
+}
+  objc_ffi_accessor_closure;
 
 @implementation NSObject (gst)
 - (BOOL)isSmalltalk
@@ -547,7 +557,33 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
 }
 
 static void
-gst_closureTrampolineMethod (ffi_cif* cif, void* result, void** args, void* userdata)
+gst_trampolineGetInstanceVar (ffi_cif* cif, void* result, void** args, void* userdata)
+{
+  objc_ffi_accessor_closure* closure = userdata;
+  id objcReceiver = *((id*)args[0]);
+
+  Ivar var = class_getInstanceVariable([objcReceiver class], closure->iVarName);
+  ptrdiff_t diff = ivar_getOffset(var);
+
+  memcpy (result, (void*)((ptrdiff_t)objcReceiver+diff), closure->return_type->size);
+
+}
+
+static void
+gst_trampolineSetInstanceVar (ffi_cif* cif, void* result, void** args, void* userdata)
+{
+  objc_ffi_accessor_closure* closure = userdata;
+  id objcReceiver = *((id*)args[0]);
+
+  Ivar var = class_getInstanceVariable([objcReceiver class], closure->iVarName);
+  ptrdiff_t diff = ivar_getOffset(var);
+
+  memcpy ((void*)((ptrdiff_t)objcReceiver+diff), (void*)args[2], closure->arg_types[2]->size);
+
+}
+
+static void
+gst_trampolineMethod (ffi_cif* cif, void* result, void** args, void* userdata)
 {
   objc_ffi_closure* closure = userdata;
   NSMethodSignature* sig = closure->sig;
@@ -593,18 +629,47 @@ gst_addMethodIntern (Class cls, SEL selector, const char * typeStr)
       const char *objCType = [sig getArgumentTypeAtIndex: i];
       closure->arg_types[i] = gst_FFITypeForObjCType(objCType);
     }
-
   
   closure->return_type = gst_FFITypeForObjCType([sig methodReturnType]);
   closure->sig = sig;
   ffi_prep_cif (&closure->cif, FFI_DEFAULT_ABI, argc, closure->return_type, closure->arg_types);
-  ffi_prep_closure_loc (&closure->closure, &closure->cif, gst_closureTrampolineMethod, closure, code);
+  ffi_prep_closure_loc (&closure->closure, &closure->cif, gst_trampolineMethod, closure, code);
   
   BOOL result = class_addMethod (cls, selector, (IMP)code, typeStr);
   if (NO == result)
     {
       [NSException raise: @"Closure"
 		  format: @"Fail adding method %s", selector];
+    }
+}
+
+void
+gst_addAccessorMethod (Class cls, char * iVarName, SEL selector, const char * typeStr, trampoline func)
+{
+  objc_ffi_accessor_closure* closure;
+  void* code;
+  int i;
+  NSMethodSignature* sig = [NSMethodSignature signatureWithObjCTypes: typeStr];
+  int argc = [sig numberOfArguments];
+
+  closure = (objc_ffi_accessor_closure*)ffi_closure_alloc (sizeof (objc_ffi_accessor_closure)  + sizeof(ffi_type *) * (argc - 1), &code);
+  for (i = 0; i < argc; i++)
+    {
+      const char *objCType = [sig getArgumentTypeAtIndex: i];
+      closure->arg_types[i] = gst_FFITypeForObjCType(objCType);
+    }
+
+  
+  closure->return_type = gst_FFITypeForObjCType([sig methodReturnType]);
+  closure->iVarName = strdup (iVarName);
+  ffi_prep_cif (&closure->cif, FFI_DEFAULT_ABI, argc, closure->return_type, closure->arg_types);
+  ffi_prep_closure_loc (&closure->closure, &closure->cif, func, closure, code);
+  
+  BOOL result = class_addMethod (cls, selector, (IMP)code, typeStr);
+  if (NO == result)
+    {
+      [NSException raise: @"Closure"
+		  format: @"Fail adding accessor %s", selector];
     }
 }
 
@@ -651,6 +716,24 @@ gst_addMethod(char * selector, Class cls, const char * typeStr)
       gst_addMethodIntern (cls, cmd, method_getTypeEncoding(mth));
 #endif
     }
+}
+
+void
+gst_addSetter (char * iVarName, char * setterName, Class cls, const char * typeStr)
+{
+  char setter[strlen(typeStr)+4];
+  snprintf (setter, strlen(typeStr)+4, "v@:%s", typeStr);
+
+  gst_addAccessorMethod (cls, iVarName, sel_getUid (setterName), setter, gst_trampolineSetInstanceVar);
+}
+
+void
+gst_addGetter (char * iVarName, char * getterName, Class cls, const char * typeStr)
+{
+  char getter[strlen(typeStr)+3];
+  snprintf (getter, strlen(typeStr)+3, "%s@:", typeStr);
+
+  gst_addAccessorMethod (cls, iVarName, sel_getUid (getterName), getter, gst_trampolineGetInstanceVar);
 }
 
 BOOL
