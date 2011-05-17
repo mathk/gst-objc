@@ -121,15 +121,15 @@ Object subclass: ObjcRuntime [
 	]
 
 	primObjcAddSetter: iVarName selector: sel inClass: class type: typeStr [
-	    <cCall: 'objc_addSetter', returnning: #void args: #(#string #string #cObjec #string)>
+	    <cCall: 'objc_addSetter' returnning: #void args: #(#string #string #cObjec #string)>
 	]
 
 	objcAddGetter: iVarName selector: sel inClass: class type: type [
-	    self primObjcAddSetter: iVarName selector: sel inClass: class objcPtr type: type objcTypeStr
+	    self primObjcAddGetter: iVarName selector: sel inClass: class objcPtr type: type objcTypeStr
 	]
 
 	primObjcAddGetter: iVarName selector: sel inClass: class type: typeStr [
-	    <cCall: 'objc_addGetter', returnning: #void args: #(#string #string #cObjec #string)>
+	    <cCall: 'objc_addGetter' returnning: #void args: #(#string #string #cObjec #string)>
 	]
 
 	classAddIvar: class name: name type: type [

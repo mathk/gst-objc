@@ -46,6 +46,21 @@ CScalar subclass: CCGFloat [
 ]
 
 CObject subclass: CObjcId [
+    CObjcId class >> sizeof [
+	^CPtr sizeof
+    ]
+
+    CObjcId class >> alignof [
+	^CPtr alignof
+    ]
+
+    sizeof [
+	^CPtr sizeof
+    ]
+
+    alignof [
+	^CPtr alignof
+    ]
     CObjcId class >> objcTypeStr [ ^'@']
     objcTypeStr [ ^'@']
 ]
@@ -56,6 +71,21 @@ CObject subclass: CVoid [
 ]
 
 CObject subclass: CObjcSel [
+    CObjcSel class >> sizeof [
+	^CPtr sizeof
+    ]
+
+    CObjcSel class >> alignof [
+	^CPtr alignof
+    ]
+
+    sizeof [
+	^CPtr sizeof
+    ]
+
+    alignof [
+	^CPtr alignof
+    ]
     CObjcSel class >> objcTypeStr [ ^':']
     objcTypeStr [ ^':']
 ]
