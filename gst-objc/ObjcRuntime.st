@@ -136,7 +136,7 @@ Object subclass: ObjcRuntime [
 	    self primClassAddIvar: class objcPtr 
 		 name: name 
 		 size: type sizeof
-		 alignment: (Character value: type alignof)
+		 alignment: (Character value: type logAlignof)
 		 type: type objcTypeStr
 	]
 

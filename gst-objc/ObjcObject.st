@@ -28,7 +28,7 @@ Object subclass: ObjcObject [
 	    dict at: #int put: CInt.
 	    dict at: #char put: CChar.
 	    dict at: #void put: CVoid.
-	    dict at: #oop put: COOP.
+	    dict at: #oop put: CObjcId.
 	    dict
 	    )
     ]

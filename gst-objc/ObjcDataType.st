@@ -45,6 +45,16 @@ CScalar subclass: CCGFloat [
     ]
 ]
 
+CObject extend [
+    CObject class >> logAlignof [
+	^(self alignof log: 2) truncated
+    ]
+
+    logAlignof [
+	^(self alignof log: 2) truncated
+    ]
+]
+
 CObject subclass: CObjcId [
     CObjcId class >> sizeof [
 	^CPtr sizeof
@@ -196,28 +206,3 @@ CBoolean extend [
     objcTypeStr [^'B']
 ]
 
-CObject subclass: COOP [
-    COOP class >> objcTypeStr [
-	^'^{oop_s=ll}'
-    ]
-
-    COOP class >> sizeof [
-	^CPtr sizeof
-    ]
-
-    COOP class >> alignof [
-	^CPtr alignof
-    ]
-
-    sizeof [
-	^CPtr sizeof
-    ]
-
-    alignof [
-	^CPtr alignof
-    ]
-
-    objcTypeStr [
-	^'^{oop_s=ll}'
-    ]
-]

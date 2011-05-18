@@ -578,7 +578,7 @@ gst_trampolineSetInstanceVar (ffi_cif* cif, void* result, void** args, void* use
   Ivar var = class_getInstanceVariable([objcReceiver class], closure->iVarName);
   ptrdiff_t diff = ivar_getOffset(var);
 
-  memcpy ((void*)((ptrdiff_t)objcReceiver+diff), (void*)args[2], closure->arg_types[2]->size);
+  memcpy ((void*)((ptrdiff_t)objcReceiver+diff), args[2], closure->arg_types[2]->size);
 
 }
 

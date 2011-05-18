@@ -15,7 +15,6 @@ gst_initModule (VMProxy * proxy)
 #else // __APPLE__
   proxy->dlOpen ("libgnustep-base", false);
 #endif  // __APPLE__
-
   gst_initFFIType ();
   gst_initThreading ();
   gst_initGlobal ();
