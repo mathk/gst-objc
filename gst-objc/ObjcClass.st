@@ -49,6 +49,19 @@ ObjcObject subclass: ObjcClass [
     register [
 	ObjcRuntime objcRegisterClassPair: self
     ]
+
+    addMutator: string type: aType [
+	ObjcRuntime objcAddGetter: string selector: string inClass: self type: aType.
+	ObjcRuntime objcAddSetter: string selector: string, ':' inClass: self type: aType.
+    ]
+
+    addStObjectMutator [
+	ObjcRuntime objcAddSetter: 'stObject' selector: 'stObject:' inClass: self type: CObjcId.
+	ObjcRuntime objcAddStObjectGetter: self.
+	
+    ]
+
+    
 ]
 
 Eval [

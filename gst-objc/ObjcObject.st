@@ -51,11 +51,11 @@ Object subclass: ObjcObject [
 	objcClass := ObjcRuntime objcAllocateClassPairSuper: aString name: self name indexable: 0.
 	objcClass stClass: self.
 	objcClass addIvar: 'stObject' type: (self typeMap at: #oop).
-	self addStObjectMutator.
+	objcClass addStObjectMutator.
 	array do: [:each |
 	    each size < 2 ifTrue: [self error: 'You must declare the name and the type of the instance variable'].
 	    objcClass addIvar: each first type: (self typeMap at: each second).
-	    self addMutator: each first type: (self typeMap at: each second).
+	    objcClass addMutator: each first type: (self typeMap at: each second).
 	].
 	objcClass register.
 	self registerHandler: [:method :message | 
@@ -67,17 +67,6 @@ Object subclass: ObjcObject [
 	self registerHandler: [:method :message |
 	    self addObjcMethod: method selector typeBuildWith: message arguments.
 	    nil] forPragma: #objcReturning:args:
-    ]
-
-    ObjcObject class >> addStObjectMutator [
-	ObjcRuntime objcAddSetter: 'stObject' selector: 'stObject:' inClass: self objcClass type: (self typeMap at: #oop).
-	ObjcRuntime objcAddStObjectGetter: self objcClass.
-	
-    ]
-
-    ObjcObject class >> addMutator: string type: aType [
-	ObjcRuntime objcAddGetter: string selector: string inClass: self objcClass type: aType.
-	ObjcRuntime objcAddSetter: string selector: string, ':' inClass: self objcClass type: aType.
     ]
 
     ObjcObject class >> alloc [
@@ -136,14 +125,6 @@ Object subclass: ObjcObject [
     
     privObjcClass [
 	^ObjcRuntime objectGetClass: self objcPtr
-    ]
-
-    setIvar: name value: value [
-	self primSetIvarTo: self objcPtr name: name value: value
-    ]
-
-    primSetIvarTo: receiver name: name value: value [
-	<cCall: 'objc_setIvarOOP' returning: #void args: #(#cObject #string #smalltalk)>
     ]
 
     isObjc [
