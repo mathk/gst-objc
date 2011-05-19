@@ -23,11 +23,15 @@ Object subclass: ObjcMessage [
     ObjcMessage class >> initialize [
 	unboxRoutine := Dictionary new.
 	unboxRoutine at: $@ put: [:array | 
-	    | obj |
-	    obj := ObjcObject fromPtr: (CObject address: (array longAt: 1)).
-	    (obj isStProxy = (Character value: 1)) 
-		ifTrue: [ obj getStObject ]
-		ifFalse: [ obj ]
+	    | obj address |
+	    address := array longAt: 1.
+	    address = 0 ifTrue:[nil]
+		ifFalse:[
+		    obj := ObjcObject fromPtr: (CObject address: address).
+		    (obj isStProxy = (Character value: 1)) 
+		        ifTrue: [ obj getStObject ]
+		        ifFalse: [ obj ]
+		]
 	].
 	unboxRoutine at: $^ put: [:array :type |
 	    ('^{oop_s*' match: type)

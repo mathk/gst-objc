@@ -75,3 +75,7 @@ void gst_addSetter (char * iVarName, char * setterName, Class cls, const char * 
 /* Add a getter to a instance variable of an objc object */
 void gst_addGetter (char * iVarName, char * getterName, Class cls, const char * typeStr);
 
+/* Speciall getter for the hidden ivar of objective-c object that is
+   an instance of a subclass declare in smalltalk */
+void gst_addStObjectGetter (Class cls);
+

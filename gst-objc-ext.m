@@ -559,6 +559,7 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
 static void
 gst_trampolineGetInstanceVar (ffi_cif* cif, void* result, void** args, void* userdata)
 {
+  GST_UNLOCK_PROXY;
   objc_ffi_accessor_closure* closure = userdata;
   id objcReceiver = *((id*)args[0]);
 
@@ -566,12 +567,13 @@ gst_trampolineGetInstanceVar (ffi_cif* cif, void* result, void** args, void* use
   ptrdiff_t diff = ivar_getOffset(var);
 
   memcpy (result, (void*)((ptrdiff_t)objcReceiver+diff), closure->return_type->size);
-
+  GST_LOCK_PROXY;
 }
 
 static void
 gst_trampolineSetInstanceVar (ffi_cif* cif, void* result, void** args, void* userdata)
 {
+  GST_UNLOCK_PROXY;
   objc_ffi_accessor_closure* closure = userdata;
   id objcReceiver = *((id*)args[0]);
 
@@ -579,37 +581,67 @@ gst_trampolineSetInstanceVar (ffi_cif* cif, void* result, void** args, void* use
   ptrdiff_t diff = ivar_getOffset(var);
 
   memcpy ((void*)((ptrdiff_t)objcReceiver+diff), args[2], closure->arg_types[2]->size);
+  GST_LOCK_PROXY;
 
+}
+
+static void
+gst_trampolineGetStObject (ffi_cif* cif, void* result, void** args, void* userdata)
+{
+  GST_UNLOCK_PROXY; 
+  objc_ffi_accessor_closure* closure = userdata;
+  id objcReceiver = *((id*)args[0]);
+
+  Ivar var = class_getInstanceVariable([objcReceiver class], closure->iVarName);
+  ptrdiff_t diff = ivar_getOffset(var);
+  OOP * stObject = (OOP*)((ptrdiff_t)objcReceiver+diff);
+  char * objcClassName = class_getName ([objcReceiver class]);
+  char stClassName[strlen(objcClassName)+6];
+
+  sprintf (stClassName, "Objc.%s", objcClassName);
+
+  OOP stClass = gst_proxy->classNameToOOP(class_getName ([objcReceiver class]));
+  
+
+  if (*stObject == nil)
+    {
+      GST_LOCK_PROXY;
+      OOP receiverOOP = gst_proxy->objectAlloc (stClass, 0);
+      gst_objc_object receiver = (gst_objc_object)OOP_TO_OBJ (receiverOOP);
+      receiver->objcPtr = (OOP)objcReceiver;
+      receiver->isClass = gst_proxy->falseOOP;
+      receiverOOP = gst_proxy->registerOOP (receiverOOP);
+      *stObject = receiverOOP;
+      GST_UNLOCK_PROXY;      
+    }
+
+  *(OOP*)result = *stObject;
+  GST_LOCK_PROXY;
 }
 
 static void
 gst_trampolineMethod (ffi_cif* cif, void* result, void** args, void* userdata)
 {
+  GST_UNLOCK_PROXY;
   objc_ffi_closure* closure = userdata;
   NSMethodSignature* sig = closure->sig;
   OOP argsOOP[[sig numberOfArguments]+1];
   OOP selector = gst_proxy->symbolToOOP(sel_getName(*((SEL*)args[1])));
   OOP resultOOP;
-  OOP receiver;
   int i;
   id objcReceiver = *((id*)args[0]);
-
-
-  Ivar var = class_getInstanceVariable([objcReceiver class], "stObject");
-
-  ptrdiff_t diff = ivar_getOffset(var);
-  receiver = *(OOP*)((ptrdiff_t)objcReceiver+diff);
-
 
   for (i = 0; i < [sig numberOfArguments]-2; i++)
     {
       gst_boxValue (args[i+2], argsOOP+i, [sig getArgumentTypeAtIndex: i+2]);
     }
+
   argsOOP[i] = NULL;
   GST_LOCK_PROXY;
-  resultOOP = gst_proxy->vmsgSend (receiver, selector, argsOOP);
+  resultOOP = gst_proxy->vmsgSend ([objcReceiver stObjectAccess], selector, argsOOP);
   GST_UNLOCK_PROXY;
   gst_unboxValue (resultOOP, result, [sig methodReturnType]);
+  GST_LOCK_PROXY;
 
 }
 
@@ -716,6 +748,12 @@ gst_addMethod(char * selector, Class cls, const char * typeStr)
       gst_addMethodIntern (cls, cmd, method_getTypeEncoding(mth));
 #endif
     }
+}
+
+void
+gst_addStObjectGetter (Class cls)
+{
+  gst_addAccessorMethod (cls, "stObject", sel_getUid("stObjectAccess"), "^{oop_s}@:", gst_trampolineGetStObject);
 }
 
 void

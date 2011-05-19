@@ -116,6 +116,14 @@ Object subclass: ObjcRuntime [
 	    ^class
 	]
 
+	objcAddStObjectGetter: class [
+	    self primObjcAddStObjectGetter: class objcPtr
+	]
+
+	primObjcAddStObjectGetter: class [
+	    <cCall: 'objc_addStObjectGetter' returning: #void args: #(#cObject)>
+	]
+
 	objcAddSetter: iVarName selector: sel inClass: class type: type [
 	    self primObjcAddSetter: iVarName selector: sel inClass: class objcPtr type: type objcTypeStr
 	]
