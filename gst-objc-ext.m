@@ -553,7 +553,6 @@ gst_sendMessage(id receiver, SEL selector, int argc, OOP args, Class superClass,
   ffi_call(&cif, methodIMP, result, unboxedArguments);
 
   // Returnning to smalltalk
-  GST_LOCK_PROXY;
 }
 
 static void
@@ -567,7 +566,6 @@ gst_trampolineGetInstanceVar (ffi_cif* cif, void* result, void** args, void* use
   ptrdiff_t diff = ivar_getOffset(var);
 
   memcpy (result, (void*)((ptrdiff_t)objcReceiver+diff), closure->return_type->size);
-  GST_LOCK_PROXY;
 }
 
 static void
@@ -581,7 +579,6 @@ gst_trampolineSetInstanceVar (ffi_cif* cif, void* result, void** args, void* use
   ptrdiff_t diff = ivar_getOffset(var);
 
   memcpy ((void*)((ptrdiff_t)objcReceiver+diff), args[2], closure->arg_types[2]->size);
-  GST_LOCK_PROXY;
 
 }
 
@@ -608,7 +605,8 @@ gst_trampolineGetStObject (ffi_cif* cif, void* result, void** args, void* userda
       GST_LOCK_PROXY;
       OOP receiverOOP = gst_proxy->objectAlloc (stClass, 0);
       gst_objc_object receiver = (gst_objc_object)OOP_TO_OBJ (receiverOOP);
-      receiver->objcPtr = (OOP)objcReceiver;
+      OOP objcOOP = gst_proxy->cObjectToOOP (objcReceiver);
+      receiver->objcPtr = objcOOP;
       receiver->isClass = gst_proxy->falseOOP;
       receiverOOP = gst_proxy->registerOOP (receiverOOP);
       *stObject = receiverOOP;
@@ -616,7 +614,6 @@ gst_trampolineGetStObject (ffi_cif* cif, void* result, void** args, void* userda
     }
 
   *(OOP*)result = *stObject;
-  GST_LOCK_PROXY;
 }
 
 static void
@@ -641,8 +638,6 @@ gst_trampolineMethod (ffi_cif* cif, void* result, void** args, void* userdata)
   resultOOP = gst_proxy->vmsgSend ([objcReceiver stObjectAccess], selector, argsOOP);
   GST_UNLOCK_PROXY;
   gst_unboxValue (resultOOP, result, [sig methodReturnType]);
-  GST_LOCK_PROXY;
-
 }
 
 void
