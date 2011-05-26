@@ -14,7 +14,9 @@ ObjcObject subclass: ObjcClass [
 	    className := ObjcRuntime classGetName: each.
 	    Namespace current 
 		    at: className asSymbol 
-		    put: (self fromPtr: each)
+		    put: (self fromPtr: each).
+	    Namespace current at: #YES put: (Character value: 1).
+	    Namespace current at: #NO put: (Character value: 0)
 	]
     ]
     
