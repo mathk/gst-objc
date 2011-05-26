@@ -28,7 +28,8 @@
     [NSRangeException raise: @"StArray"
 		     format: @"Index is out of bound: %d", index];
 
-  OOP value = arrayOOPAt(stArray, index+1);
+  gst_object array = (gst_object)OOP_TO_OBJ (stArray);
+  OOP value = ARRAY_OOP_AT(array, index+1);
   id returnValue;
   /* No primitive type is suported for the time being */
   gst_unboxValue(value, &returnValue, "@");
