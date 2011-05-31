@@ -1,5 +1,5 @@
 #include <gstpub.h>
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 #import "gst-objc.h"
 #import "gst-string.h"
 #import "gst-array.h"
@@ -11,6 +11,10 @@
 @interface NSObject (gst)
 - (BOOL)isSmalltalk;
 - (BOOL)isStProxy;
+@end
+
+@interface NSApplication (gst)
+- (BOOL) setRunning;
 @end
 
 typedef struct gst_objc_object
@@ -79,3 +83,5 @@ void gst_addGetter (char * iVarName, char * getterName, Class cls, const char * 
    an instance of a subclass declare in smalltalk */
 void gst_addStObjectGetter (Class cls);
 
+/* install the hook for idle task */
+void gst_installSuspendLoop ();

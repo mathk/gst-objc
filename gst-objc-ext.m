@@ -45,6 +45,17 @@ typedef struct objc_ffi_accessor_closure {
 }
 @end
 
+@implementation NSApplication (gst)
+- (BOOL)setRunning
+{
+#ifdef GNU_RUNTIME
+  _app_is_running = YES;
+#else
+  _running = YES;
+#endif
+}
+@end
+
 void gst_initThreading ()
 {
   pthread_mutex_init (&gstProxyMutex, NULL);
@@ -836,4 +847,35 @@ gst_setIvarOOP(id receiver, const char * name, OOP value)
   *(OOP*)((ptrdiff_t)receiver+diff) = value;
 
 }
+
+void
+gst_runOneStepLoop ()
+{
+  NSAutoreleasePool * pool = [NSAutoreleasePool new];
+  if (nil != NSApp)
+    {
+      if ([NSApp isRunning] == NO)
+	{
+	  [NSApp setRunning];
+	  [NSApp finishLaunching];
+	}
+      NSEvent * e = [NSApp nextEventMatchingMask: NSAnyEventMask
+			 untilDate: [NSDate distantFuture]
+			    inMode: NSDefaultRunLoopMode
+			   dequeue: YES];
+      
+      if (e != nil)
+	{
+	  [NSApp sendEvent: e];
+	}
+    }
+  [pool drain];
+}
+
+void
+gst_installSuspendLoop ()
+{
+  gst_proxy->setSigsuspend ((PTR)gst_runOneStepLoop);
+}
+
 
