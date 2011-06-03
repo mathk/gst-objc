@@ -1,6 +1,6 @@
-Object subclass: ObjcApplication [
 
-    | nsApp |
+Object subclass: ObjcApplication [
+    | nsApp delay |
 
     ObjcApplication class [
 	| uniqueInstance |
@@ -15,15 +15,24 @@ Object subclass: ObjcApplication [
     ]
 
     initialize [
-	nsApp := NSApplication sharedApplication
+	nsApp := NSApplication sharedApplication.
+	delay := Delay untilMilliseconds: 20.
     ]
 
     pollEvent [
-	| event |
+	| event pool |
+	pool := NSAutoreleasePool alloc init.
 	event := nsApp nextEventMatchingMask: self class defaultNSAnyEventMask 
 	      untilDate: NSDate distantFuture 
 	      inMode: 'NSDefaultRunLoopMode' 
 	      dequeue: YES.
-	[nsApp sendEvent: event] forkAt: Processor userSchedulingPriority
+	[nsApp sendEvent: event] forkAt: Processor userSchedulingPriority.
+	delay wait.
+	pool drain.
+	^true
+    ]
+
+    run [
+	[[self pollEvent] whileTrue] forkAt: Processor highIOPriority
     ]
 ]

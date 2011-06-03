@@ -8,5 +8,6 @@
 	<filein>ObjcMessage.st</filein>
 	<filein>ObjcObject.st</filein>
 	<filein>ObjcAppKit.st</filein>
+	<filein>ObjcApplication.st</filein>
 	<filein>ObjcClass.st</filein>
 </package>
