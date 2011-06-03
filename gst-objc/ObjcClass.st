@@ -12,9 +12,10 @@ ObjcObject subclass: ObjcClass [
 	ObjcRuntime objcGetClassList do: [:each | 
 	    | className |
 	    className := ObjcRuntime classGetName: each.
+	   " Namespace current at:  className asSymbol ifPresent: [:class | ('Redefining ',  className asSymbol) printNl]."
 	    Namespace current 
 		    at: className asSymbol 
-		    put: (self fromPtr: each).
+		    ifAbsentPut: [(self fromPtr: each)].
 	    Namespace current at: #YES put: (Character value: 1).
 	    Namespace current at: #NO put: (Character value: 0)
 	]

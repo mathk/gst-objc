@@ -14,7 +14,8 @@
 @end
 
 @interface NSApplication (gst)
-- (BOOL) setRunning;
+- setRunning;
+- setLaunched;
 @end
 
 typedef struct gst_objc_object
