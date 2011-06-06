@@ -113,6 +113,10 @@ Object subclass: ObjcRuntime [
 	    <cCall: 'objc_installSuspendLoop' returning: #void args: #()>
 	]
 
+	objcInstallEventLoop [
+	    <cCall: 'objc_installEventLoop' returning: #void args: #()>
+	]
+
 	objcAllocateClassPairSuper: aSuperName name: aName indexable: aInt [
 	    | class |
 	    class := ObjcClass fromPtr: (self primObjcAllocateClassPairSuper: (self at: aSuperName) objcPtr name: aName indexable: aInt).

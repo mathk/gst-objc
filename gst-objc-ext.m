@@ -855,10 +855,13 @@ gst_setIvarOOP(id receiver, const char * name, OOP value)
 
 }
 
-void
-gst_runOneStepLoop ()
+static NSEvent* event = nil;
+static NSAutoreleasePool * pool;
+
+mst_Boolean
+gst_objcPollEvent (int ms)
 {
-  NSAutoreleasePool * pool = [NSAutoreleasePool new];
+  pool = [NSAutoreleasePool new];
   if (nil != NSApp)
     {
       if ([NSApp isRunning] == NO)
@@ -866,29 +869,30 @@ gst_runOneStepLoop ()
 	  [NSApp setRunning];
 	  [NSApp finishLaunching];
 	}
-      NSEvent * e = [NSApp nextEventMatchingMask: NSAnyEventMask
+      if (event != nil)
+	return false;
+
+      event = [NSApp nextEventMatchingMask: NSAnyEventMask
 			 untilDate: [NSDate distantFuture]
 			    inMode: NSDefaultRunLoopMode
 			   dequeue: YES];
-      
-      if (e != nil)
-	{
-	  [NSApp sendEvent: e];
-	}
+    }
+  return true;
+}
+
+void
+gst_objcDispatch ()
+{
+  if (event != nil)
+    {
+      [NSApp sendEvent: event];
+      event = nil;
     }
   [pool drain];
 }
 
 void
-gst_idleTask ()
+gst_installEventLoop ()
 {
-  usleep(20000);
+  gst_proxy->setEventLoopHandlers (gst_objcPollEvent, gst_objcDispatch);
 }
-
-void
-gst_installSuspendLoop ()
-{
-  //gst_proxy->setSigsuspend ((PTR)gst_idleTask);
-}
-
-

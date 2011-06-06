@@ -86,3 +86,5 @@ void gst_addStObjectGetter (Class cls);
 
 /* install the hook for idle task */
 void gst_installSuspendLoop ();
+
+void gst_installEventLoop ();
