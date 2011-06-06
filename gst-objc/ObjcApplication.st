@@ -53,7 +53,6 @@ Object subclass: ObjcApplication [
 
     run [
 	|pool|
-
 	nsApp setRunning.
 	nsApp setLaunched.
 	pool := NSAutoreleasePool alloc init.

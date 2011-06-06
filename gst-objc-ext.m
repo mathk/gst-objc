@@ -46,7 +46,7 @@ typedef struct objc_ffi_accessor_closure {
 @end
 
 @implementation NSApplication (gst)
-- setRunning
+- (void)setRunning
 {
 #ifdef GNU_RUNTIME
   _app_is_running = YES;
@@ -55,9 +55,11 @@ typedef struct objc_ffi_accessor_closure {
 #endif
 }
 
-- setLaunched
+- (void)setLaunched
 {
+#ifdef GNU_RUNTIME
   _app_is_launched = YES;
+#endif
 }
 @end
 
@@ -886,7 +888,7 @@ gst_idleTask ()
 void
 gst_installSuspendLoop ()
 {
-  gst_proxy->setSigsuspend ((PTR)gst_idleTask);
+  //gst_proxy->setSigsuspend ((PTR)gst_idleTask);
 }
 
 
