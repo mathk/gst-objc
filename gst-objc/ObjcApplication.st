@@ -21,7 +21,6 @@ Object subclass: ObjcApplication [
     ]
 
     loadNibNamed: aName [
-	nsApp inspect.
 	NSBundle loadNibNamed: aName owner: nsApp.
     ]
 
@@ -52,14 +51,6 @@ Object subclass: ObjcApplication [
     ]
 
     run [
-	|pool|
-	nsApp setRunning.
-	nsApp setLaunched.
-	pool := NSAutoreleasePool alloc init.
-	nsApp finishLaunching.
-	pool drain.
-	"dispLoop := [[self dispatchLoop] whileTrue] forkAt: Processor userSchedulingPriority."
-	loop := [[self pollEvent] whileTrue] forkAt: Processor highIOPriority.
-	[(Delay forSeconds: 10000) wait] whileTrue
+	ObjcRuntime objcInstallEventLoop
     ]
 ]
