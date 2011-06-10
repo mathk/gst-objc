@@ -856,22 +856,24 @@ gst_setIvarOOP(id receiver, const char * name, OOP value)
 }
 
 static NSEvent* event = nil;
-static NSAutoreleasePool * pool;
+static NSAutoreleasePool * pool = nil;
 
 mst_Boolean
 gst_objcPollEvent (int ms)
 {
-  pool = [NSAutoreleasePool new];
   if (nil != NSApp)
     {
       if ([NSApp isRunning] == NO)
 	{
+	  pool = [NSAutoreleasePool new];
 	  [NSApp setRunning];
 	  [NSApp finishLaunching];
+	  [pool drain];
 	}
       if (event != nil)
-	return false;
+	  return false;
 
+      pool = [NSAutoreleasePool new];
       event = [NSApp nextEventMatchingMask: NSAnyEventMask
 			 untilDate: [NSDate distantFuture]
 			    inMode: NSDefaultRunLoopMode
@@ -887,8 +889,8 @@ gst_objcDispatch ()
     {
       [NSApp sendEvent: event];
       event = nil;
+      [pool drain];
     }
-  [pool drain];
 }
 
 void

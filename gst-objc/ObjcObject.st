@@ -1,6 +1,6 @@
 Object subclass: ObjcObject [
 
-    | objcPtr isClass |
+    | objcPtr isClass owned |
 
     ObjcCache := WeakValueLookupTable new.
 
@@ -177,6 +177,10 @@ Object subclass: ObjcObject [
     
     log [
 	ObjcRuntime logObject: objcPtr
+    ]
+
+    finalize [
+	self objcPtr release
     ]
 ]
 
